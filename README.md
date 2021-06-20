@@ -1,0 +1,114 @@
+Grails Payment plugin
+---
+
+###Author: Vahid Hedayati 
+Date: 18th June 2021 
+
+Grails Payment Plugin supports 3 payment systems that you can simply add to your site:
+
+### Paypal
+### Stripe
+### Square 
+
+It provides a web interface so you can update database and underlying configuration listener with following details: 
+> Enable / Disable any / all providers as you like 
+>
+> Change from SANDBOX to LIVE on any or all give providers
+> 
+> Change sandbox / live secret / public keys for any / all providers.
+> 
+
+All underlying providers use the listener configuration values and as any change is made the provides will instantly pick up those effects.
+
+
+You will still need to set the initial values in application.groovy / yml file - [explained here](http://github.com/provide)
+
+
+
+Getting plugin to work on a sample site:
+---
+
+Copy `SampleApplication.groovy` from conf folder in plugin to your app as grails-app/conf/`application.groovy`
+```groovy
+
+
+payment {
+    currencyCode = org.grails.plugin.payment.enums.CurrencyTypes.GBP
+    countryCode = org.grails.plugin.payment.enums.CountryCode.GB
+    hostName = "http://localhost:8080"
+    square {
+        applicationId = 'LIVE_APP_ID'
+        accessToken = 'LIVE_ACCESS_TOKEN'
+        location='LOC1' //get this from location tab in square api dev console
+        applicationSecret = 'LIVE APP SECRET'  //oauth
+        enabled=true
+        mode='sandbox'  // choose sandbox or live in web interface
+        sandbox {
+            applicationId = 'sandbox-sq0111-S1sssd3232ssA'
+            accessToken = 'EAAAExxdeee22wwwwwww2aaaaakkty'
+            applicationSecret = 'sandbox-sqsww-ss222222sssssssssssT-tQsaq2o'  //oauth
+            location='Lxxsa34aa3'
+        }
+    }
+
+
+    paypal{
+        enabled=true
+        mode='sandbox'  // choose sandbox or live in web interface
+        email="your_paypal@emailaddress.com"
+        clientId = 'AZsdfdsfsrewrwerwesddsfdsfsdfdsfsdfsgswresdfdsfgfdsfsdfd-1'
+        clientSecret = 'EEsdfdsfsdfsfsdfdsfsdfsdfdsfdsfsdfdsfdsfdsfddsdsdsdsffds_oi'
+        endpoint = "https://api.paypal.com"
+        sandbox{
+            email='sb-sdfsdfsdf2@business.example.com'
+            clientId = 'AZsdfdsfdsfdsfdsfdsdf-sdfsdfdsfdsfdsfsdfsdfdsfsdfsdfdsfddsf-1'
+            clientSecret ='EEsdfdsfdsfdsfsdfdsfdsfdsfdsdfsdsdfsdsdfddffddsfdf_oi'
+            endpoint = "https://api.sandbox.paypal.com"
+        }
+    }
+    stripe {
+        ecretKey = 'YOUR_LIVE_SECRET_KEY'
+        publishableKey = 'YOUR_LIVE_PUBLISHABLE_KEY'
+        enabled=true
+        mode='sandbox'  // choose sandbox or live in web interface
+        test {
+            secretKey='sk_test_51dsfdsfdsfdsfdsfdsfsfsdfsdfdfdfdsdfDQ'
+            publishableKey= 'pk_test_51sdfdsfdsfdsfdsfdsdsfdfsdsdsdssdsfdsddsdfddfsdsd9'
+        }
+    }
+
+}
+```
+
+
+
+Add dependency to `build.gradle`:
+
+```
+
+dependencies {
+  ...
+ // compile "org.grails.plugins:gsp"
+ //under above add: 
+ 
+  compile "org.grails.plugins:payment:0.1"
+  compile 'org.jetbrains.kotlin:kotlin-stdlib:1.3.70'
+  ...
+}
+```
+
+Then update init/{package}/`BootStrap.groovy` 
+```groovy
+class BootStrap {
+
+    def paymentService
+    def init = { servletContext ->
+
+        paymentService.addPaymentConfig()
+    }
+    def destroy = {
+    }
+}
+```
+
+Start up site 
