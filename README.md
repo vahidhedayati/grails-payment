@@ -22,9 +22,7 @@ It provides a web interface so you can update database and underlying configurat
 
 All underlying providers use the listener configuration values and as any change is made the provides will instantly pick up those effects.
 
-
-You will still need to set the initial values in application.groovy / yml file - [explained here](http://github.com/provide)
-
+ 
 
 
 Getting plugin to work on a sample site:
