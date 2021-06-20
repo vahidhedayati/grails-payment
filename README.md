@@ -121,6 +121,63 @@ Start up your test site
 [You-Tube Video showing plugin in use](https://www.youtube.com/watch?v=U4iCEBeRiYs)
 
 
+How to use plugin locally
+---
+By installing the plugin you get the working steps to make payments work and all of the code to execute run it.
+If what you see in video is sufficient then all you need is the buttons
+
+Where you would pass instance which contains what the sample [checkout](https://github.com/vahidhedayati/grails-payment/blob/main/grails-app/views/payment/checkout.gsp)
+as part of the `instance` variable this would be all relevant input, all providers paypal,stripe & square haev been fully implemented to create a customer on their systems which takes all of your users input by this I mean their address etc is also passed to the third party 
+and is also returned in their final response back to you. 
+`finalTotal` this is full total on your checkout being charged.
+
+To figure out what variables / parameters are required refer to [CartBean](https://github.com/vahidhedayati/grails-payment/blob/main/src/main/groovy/org/grails/plugin/payment/beans/CartBean.groovy)
+
+
+
+```gsp
+     <!--CREDIT CART PAYMENT-->
+            <payment:buttons instance="${instance}" finalTotal="${finalTotal}" />
+```
+
+Everything the user provides on the checkout page is captured in [AddressBean](https://github.com/vahidhedayati/grails-payment/blob/main/src/main/groovy/org/grails/plugin/payment/beans/AddressBean.groovy) So you need to ensure your instance has the user details / address details set provided
+your instance should look like:
+
+
+
+```gsp
+     <!--CREDIT CART PAYMENT-->
+            <payment:buttons instance="${[
+                finalTotal: 200,
+                address:[
+                        title:'Mr',
+                        firstName:'fred',
+                        lastName: 'Smith',
+                        line1: '1 Long lane',
+                        line2: 'Big street',
+                        city: 'London',
+                        state:'x',
+                        country: 'United Kingdom',
+                        countryCode: 'GB',
+                        username: 'fred',
+                        password: 'password',
+                        confirmPassword: 'password',
+                        telephone:'12345'
+            ]}" 
+            finalTotal="${200}" />
+```
+
+The `CartBean` has a load more inputs most of it set by system above is basic params required and format required to be posted 
+for buttons to actually post correct information on.
+
+The buttons uses vanilla Java script to control the basic stuff that it does, it is all to give you an idea 
+The buttons and processes can be tweaked by copying locally and updating.
+
+By all means if you improve plugin get in touch and improve for everyone else too
+
+
+
+
 ## Paypal steps:
 Step 1 [paypalcheckout](https://github.com/vahidhedayati/grails-payment/blob/main/grails-app/controllers/org/grails/plugin/payment/PaymentController.groovy#L94) 
 
