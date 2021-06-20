@@ -116,9 +116,15 @@ class BootStrap {
 }
 ```
 
-Start up your test site
+Start up your test site & 2 below controllers will now be available 
 
-[You-Tube Video showing plugin in use](https://www.youtube.com/watch?v=U4iCEBeRiYs)
+>>http://localhost:8080/payment
+> 
+ >>http://localhost:8080/paymentConfig 
+
+Full walkthrough video 
+--
+>> [You-Tube Video showing plugin in use](https://www.youtube.com/watch?v=U4iCEBeRiYs)
 
 
 How to use plugin locally
