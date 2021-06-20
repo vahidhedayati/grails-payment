@@ -1,0 +1,147 @@
+.stripeCardFields {
+   /* background-color: #525f7f;*/
+}
+
+.stripeCardFields * {
+    font-family: Quicksand, Open Sans, Segoe UI, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.stripeCardFields .fieldset {
+    margin: 0 15px 30px;
+    padding: 0;
+    border-style: none;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-flow: row wrap;
+    flex-flow: row wrap;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}
+
+.stripeCardFields .field {
+    padding: 10px 20px 11px;
+    background-color:  #525f7f;
+    border-radius: 20px;
+    width: 100%;
+}
+
+.stripeCardFields .field.half-width {
+    width: calc(50% - (5px / 2));
+}
+
+.stripeCardFields .field.third-width {
+    width: calc(33% - (5px / 3));
+}
+
+.stripeCardFields .field + .field {
+    margin-top: 6px;
+}
+
+.stripeCardFields .field.focus,
+.stripeCardFields .field:focus {
+    color: #424770;
+    background-color: #f6f9fc;
+}
+
+.stripeCardFields .field.invalid {
+    background-color: #fa755a;
+}
+
+.stripeCardFields .field.invalid.focus {
+    background-color: #f6f9fc;
+}
+
+.stripeCardFields .field.focus::-webkit-input-placeholder,
+.stripeCardFields .field:focus::-webkit-input-placeholder {
+    color: #cfd7df;
+}
+
+.stripeCardFields .field.focus::-moz-placeholder,
+.stripeCardFields .field:focus::-moz-placeholder {
+    color: #cfd7df;
+}
+
+.stripeCardFields .field.focus:-ms-input-placeholder,
+.stripeCardFields .field:focus:-ms-input-placeholder {
+    color: #cfd7df;
+}
+
+.stripeCardFields input, .stripeCardFields button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    outline: none;
+    border-style: none;
+}
+
+.stripeCardFields input {
+    color: #fff;
+}
+
+.stripeCardFields input::-webkit-input-placeholder {
+    color: #9bacc8;
+}
+
+.stripeCardFields input::-moz-placeholder {
+    color: #9bacc8;
+}
+
+.stripeCardFields input:-ms-input-placeholder {
+    color: #9bacc8;
+}
+
+.stripeCardFields button {
+    display: block;
+    width: calc(100% - 30px);
+    height: 40px;
+    margin: 0 15px;
+    background-color: #fcd669;
+    border-radius: 20px;
+    color: #525f7f;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.stripeCardFields button:active {
+    background-color: #f5be58;
+}
+
+.stripeCardFields .error svg .base {
+    fill: #fa755a;
+}
+
+.stripeCardFields .error svg .glyph {
+    fill: #c0a16b;
+}
+
+.stripeCardFields .error .message {
+    color: #ff0000;
+    border: 0px !important;
+}
+.stripeCardFields .message {
+border: 1px solid #FFFF !important;
+    -webkit-box-shadow: 0 0 0.25em #FFFF;
+    box-shadow: 0 0 0.25em #FFFF;
+}
+.stripeCardFields .success .icon .border {
+stroke: #fcd669;
+}
+
+.stripeCardFields .success .icon .checkmark {
+stroke: #fff;
+}
+
+.stripeCardFields .success .title {
+color: #fff;
+}
+
+.stripeCardFields .success .message {
+color: #9cabc8;
+}
+
+.stripeCardFields .success .reset path {
+fill: #fff;
+}
