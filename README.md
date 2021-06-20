@@ -149,6 +149,7 @@ your instance should look like:
      <!--CREDIT CART PAYMENT-->
             <payment:buttons instance="${[
                 finalTotal: 200,
+                currencyCode: 'GBP'  //defaults to PaymentConfig value if not set
                 address:[
                         title:'Mr',
                         firstName:'fred',
@@ -158,7 +159,7 @@ your instance should look like:
                         city: 'London',
                         state:'x',
                         country: 'United Kingdom',
-                        countryCode: 'GB',
+                        countryCode: 'GB',  //should default to set value in PaymentConfig if not set
                         username: 'fred',
                         password: 'password',
                         confirmPassword: 'password',
