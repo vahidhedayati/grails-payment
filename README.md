@@ -128,12 +128,12 @@ Step 2 [uploadCart](https://github.com/vahidhedayati/grails-payment/blob/main/gr
 
 Step 3 [execute](https://github.com/vahidhedayati/grails-payment/blob/main/grails-app/controllers/org/grails/plugin/payment/paypal/PaypalController.groovy#L125)
 
-step 4 [cancel/thanks] (https://github.com/vahidhedayati/grails-payment/blob/main/grails-app/controllers/org/grails/plugin/payment/paypal/PaypalController.groovy#L149-L169)
+step 4 [cancel/thanks](https://github.com/vahidhedayati/grails-payment/blob/main/grails-app/controllers/org/grails/plugin/payment/paypal/PaypalController.groovy#L149-L169)
 
 
 ## Square steps:
 
-Step 1 [squarecheckout] (https://github.com/vahidhedayati/grails-payment/blob/main/grails-app/controllers/org/grails/plugin/payment/PaymentController.groovy#L143)
+Step 1 [squarecheckout](https://github.com/vahidhedayati/grails-payment/blob/main/grails-app/controllers/org/grails/plugin/payment/PaymentController.groovy#L143)
 
 step 2 [thanks](https://github.com/vahidhedayati/grails-payment/blob/main/grails-app/controllers/org/grails/plugin/payment/PaymentController.groovy#L40)
 
