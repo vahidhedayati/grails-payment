@@ -133,7 +133,7 @@ By installing the plugin you get the working steps to make payments work and all
 If what you see in video is sufficient then all you need is the buttons
 
 Where you would pass instance which contains what the sample [checkout](https://github.com/vahidhedayati/grails-payment/blob/main/grails-app/views/payment/checkout.gsp)
-as part of the `instance` variable this would be all relevant input, all providers paypal,stripe & square haev been fully implemented to create a customer on their systems which takes all of your users input by this I mean their address etc is also passed to the third party 
+as part of the `instance` variable this would be all relevant input, all providers paypal, stripe & square have been fully implemented to create a customer on their systems which takes all of your users input by this I mean their address etc is also passed to the third party 
 and is also returned in their final response back to you. 
 `finalTotal` this is full total on your checkout being charged.
 
@@ -170,6 +170,7 @@ your instance should look like:
                         password: 'password',
                         confirmPassword: 'password',
                         telephone:'12345'
+                ]   
             ]}" 
             finalTotal="${200}" />
 ```
