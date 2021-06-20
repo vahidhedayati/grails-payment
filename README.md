@@ -116,7 +116,7 @@ class BootStrap {
 }
 ```
 
-Start up your test site & 2 below controllers will now be available 
+Start up your test site, there will now be an additional 2 controllers available: 
 
 >>http://localhost:8080/payment
 > 
