@@ -1,5 +1,6 @@
 
 payment {
+    paymentConfigEnabled = true
     currencyCode = org.grails.plugin.payment.enums.CurrencyTypes.GBP
     countryCode = org.grails.plugin.payment.enums.CountryCode.GB
     hostName = "http://localhost:8080"

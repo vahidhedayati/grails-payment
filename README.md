@@ -167,18 +167,19 @@ your instance should look like:
                         country: 'United Kingdom',
                         countryCode: 'GB',  //should default to set value in PaymentConfig if not set
                         username: 'fred',
-                        password: 'password',
-                        confirmPassword: 'password',
                         telephone:'12345'
                 ]   
             ]}" 
             finalTotal="${200}" />
 ```
 
-The `CartBean` has a load more inputs most of it set by system above is basic params required and format required to be posted 
-for buttons to actually post correct information on.
+The `CartBean` has a load more inputs most of it set by system.
+The above example is the basic parameters and format required to be posted 
+for buttons to actually post correct information to selected provider.
+Front end currently asks for password and confirmation this is because it came from a template 
+that signed up user onto system via spring security, this plugin does not provide spring security 
 
-The buttons uses vanilla Java script to control the basic stuff that it does, it is all to give you an idea 
+The buttons use vanilla JavaScript to control the basic stuff that it does, it is all to give you an idea 
 The buttons and processes can be tweaked by copying locally and updating.
 
 By all means if you improve plugin get in touch and improve for everyone else too

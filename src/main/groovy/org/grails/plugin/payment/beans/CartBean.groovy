@@ -23,9 +23,6 @@ class CartBean implements Validateable  {
     List cart=[]
     Map cartCounter=[:]
     String currencyCode
-    String cardnumber
-    String cvc
-    String expDate
 
     BigDecimal shipping
     BigDecimal subTotal
@@ -45,11 +42,8 @@ class CartBean implements Validateable  {
     static constraints = {
         squareApplicationId(nullable:true)
         squareLocationId(nullable:true)
-        cardnumber(nullable:true)
         squareToken(nullable:true)
         squareLocation(nullable:true)
-        cvc(nullable:true)
-        expDate(nullable:true)
         stripe(nullable:true)
         stripePublicKey nullable:true
         stripeToken(nullable:true)
@@ -154,13 +148,6 @@ class CartBean implements Validateable  {
         }
     }
 
-    Map<String,String> loadCardValues() {
-        Map<String, String> result = [:]
-        result.cvc = cvc
-        result.cardnumber = cardnumber
-        result.expDate = expDate
-        return result
-    }
     Map<String,String> loadCustomerAddress() {
         Map<String,String> result = [:]
         AddressBean chosen = findAddressBean()

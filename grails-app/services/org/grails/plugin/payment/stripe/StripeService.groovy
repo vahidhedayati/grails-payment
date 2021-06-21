@@ -135,7 +135,7 @@ class StripeService {
         return success
     }
 
-    Card createCard(Map<String, Object> props, String customerId) {
+    Card createCard(String customerId) {
         Map<String, Object> retrieveParams = new HashMap<>()
         List<String> expandList = new ArrayList<>()
         expandList.add("sources")

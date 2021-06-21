@@ -1,6 +1,8 @@
 package org.grails.plugin.payment
 
 import grails.gorm.transactions.Transactional
+import org.grails.plugin.payment.listeners.PaymentConfigListener
+
 import static org.springframework.http.HttpStatus.NOT_FOUND
 import static org.springframework.http.HttpStatus.OK
 
@@ -11,22 +13,32 @@ class PaymentConfigController {
 
     static allowedMethods = [save: "POST", upload:"POST", update: "PUT", delete: "DELETE"]
 
+    private def getIfEnabled() {
+        if (!PaymentConfigListener.squareEnabled) {
+            redirect (controller:'payment', action:'checkout')
+            return
+        }
+    }
     def index(Integer max) {
+        ifEnabled
         params.max = Math.min(max ?: 10, 100)
         respond PaymentConfig.list(params), model: [paymentConfigCount: PaymentConfig.count()]
     }
 
     def show(PaymentConfig paymentConfig) {
+        ifEnabled
         respond paymentConfig
     }
 
     def edit(PaymentConfig paymentConfig) {
+        ifEnabled
         respond paymentConfig
     }
 
 
     @Transactional
     def update(PaymentConfig paymentConfig ) {
+        ifEnabled
         if (paymentConfig == null) {
             transactionStatus.setRollbackOnly()
             notFound()

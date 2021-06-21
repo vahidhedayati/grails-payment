@@ -8,6 +8,8 @@ class PaymentConfig {
     CurrencyTypes currencyCode= CurrencyTypes.GBP
     CountryCode countryCode= CountryCode.GB
 
+    boolean paymentConfigEnabled=true
+
 
     final static String SANDBOX = 'sandbox'
     final static String LIVE = 'live'

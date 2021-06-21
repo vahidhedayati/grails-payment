@@ -48,6 +48,7 @@ class PaymentService {
             params.stripeSecretKey = grailsApplication?.config?.payment?.stripe?.secretKey
             params.stripePublishableKey = grailsApplication?.config?.payment?.stripe?.publishableKey
 
+            params.paymentConfigEnabled = grailsApplication?.config?.payment?.paymentConfigEnabled
 
             params.squareSandboxApplicationId = grailsApplication?.config?.payment?.square?.sandbox?.applicationId
             params.squareSandboxAccessToken = grailsApplication?.config?.payment?.square?.sandbox?.accessToken
@@ -76,6 +77,9 @@ class PaymentService {
 
     def updatePaymentConfigListener(PaymentConfig paymentConfig) {
         if (paymentConfig && paymentConfig?.id) {
+
+            PaymentConfigListener.updateGeneric('paymentConfigEnabled',(paymentConfig?.paymentConfigEnabled).toString())
+
 
             PaymentConfigListener.updateGeneric('paypalEnabled',(paymentConfig?.paypalEnabled).toString())
 

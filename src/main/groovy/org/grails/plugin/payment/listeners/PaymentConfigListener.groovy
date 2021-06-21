@@ -74,6 +74,11 @@ class PaymentConfigListener {
     public static boolean getSquareEnabled(String configName='squareEnabled') {
         getBooleanField(configName)
     }
+
+    public static boolean getPaymentConfigEnabled(String configName='paymentConfigEnabled') {
+        getBooleanField(configName)
+    }
+
     public static boolean getBooleanField(String configName='enableContactForm') {
         return Boolean.valueOf(GENERIC_MAP.get(configName))
     }

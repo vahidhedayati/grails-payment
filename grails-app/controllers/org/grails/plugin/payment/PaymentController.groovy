@@ -1,6 +1,5 @@
 package org.grails.plugin.payment
 
-import com.squareup.square.SquareClient
 import com.squareup.square.api.PaymentsApi
 import com.squareup.square.exceptions.ApiException
 import com.squareup.square.models.*
@@ -222,7 +221,7 @@ class PaymentController {
 
             session.currentUser = bean.user
             Customer customer = stripeService.createCustomer(bean.loadCustomerValues(stripeService.createAddress(bean.loadCustomerAddress())))
-            Card card = stripeService.createCard(bean.loadCardValues(),customer.id)
+            Card card = stripeService.createCard(customer.id)
             if (customer) {
                 chargeParams.put("customer", customer.id)
                 chargeParams.put("source", card.id)
