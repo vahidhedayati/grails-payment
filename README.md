@@ -6,6 +6,24 @@ Date: 18th June 2021
 
 Grails Payment Plugin written in Grails 4
 
+Installation for a grails 4 application
+-----
+#### Add dependency to `build.gradle`:
+
+```
+
+dependencies {
+
+ 
+  compile "io.github.vahidhedayati:payment:0.1"
+
+  //You will only need this if you are looking to use square payment
+  compile 'org.jetbrains.kotlin:kotlin-stdlib:1.3.70'
+
+}
+```
+
+
 Supports 3 payment systems that you can simply add to your site:
 
 ### Paypal
@@ -84,21 +102,7 @@ payment {
 
 
 
-Add dependency to `build.gradle`:
 
-```
-
-dependencies {
-  ...
- // compile "org.grails.plugins:gsp"
- //under above add: 
- 
-  compile "io.github.vahidhedayati:payment:0.1"
-  //You will only need this if you are looking to use square payment
-  compile 'org.jetbrains.kotlin:kotlin-stdlib:1.3.70'
-  ...
-}
-```
 
 Then update init/{package}/`BootStrap.groovy`
 This simply loads in application.groovy's configuration into PaymentConfig domain class and copies all 
