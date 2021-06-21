@@ -93,7 +93,7 @@ dependencies {
  // compile "org.grails.plugins:gsp"
  //under above add: 
  
-  compile "org.grails.plugins:payment:0.1"
+  compile "io.github.vahidhedayati:payment:0.1"
   //You will only need this if you are looking to use square payment
   compile 'org.jetbrains.kotlin:kotlin-stdlib:1.3.70'
   ...
