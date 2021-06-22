@@ -15,7 +15,7 @@ Installation for a grails 4 application
 dependencies {
 
  
-  compile "io.github.vahidhedayati:payment:1.0.0"
+  compile "io.github.vahidhedayati:payment:1.0.1"
 
   //You will only need this if you are looking to use square payment
   compile 'org.jetbrains.kotlin:kotlin-stdlib:1.3.70'
