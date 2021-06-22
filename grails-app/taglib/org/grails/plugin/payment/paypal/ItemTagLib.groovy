@@ -60,6 +60,7 @@ class ItemTagLib {
                 }
                 out << body(itemInfo)
             }
+
         }
 
     }

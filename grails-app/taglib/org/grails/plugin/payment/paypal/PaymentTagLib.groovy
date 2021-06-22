@@ -78,10 +78,15 @@ class PaymentTagLib {
         CartBean bean = new CartBean(attrs?.instance)
         bean.bindBean(attrs?.instance?.cart as List,attrs?.instance?.cartCounter as Map,PUBLIC_KEY, (PaymentUser)attrs?.instance?.user)
         updateBean(bean)
-        session.finalTotal = bean.finalTotal
-        session.cart = bean.cart
-        session.cartCounter = bean.cartCounter
-        out << g.render(contextPath: pluginContextPath, template : '/payment/checkout', model: [instance:bean])
+        if (!bean?.cart) {
+            out << g.render(contextPath: pluginContextPath, template : '/payment/failed', model: [instance:bean])
+        } else {
+            session.finalTotal = bean.finalTotal
+            session.cart = bean.cart
+            session.cartCounter = bean.cartCounter
+            out << g.render(contextPath: pluginContextPath, template : '/payment/checkout', model: [instance:bean])
+        }
+
     }
 
 

@@ -40,12 +40,12 @@ class TestController {
         instance.editCartUrl=g.createLink(controller:'test', action:'checkout')
         //description used by doPayment in PaymentService when finalising sale
         instance.cart=[
-        [id:1, name:'item 1', description: 'something',  currency:'GBP', listPrice:1.10],
-        [id:2, name:'item 2', description: 'something', currency:'GBP', listPrice:1.00],
-        [id:1, name:'item 1',  description: 'something', currency:'GBP', listPrice:1.10],
-        [id:1, name:'item 1',  description: 'something', currency:'GBP', listPrice:1.10],
-        [id:3, name:'item 3',  description: 'something',currency:'GBP', listPrice:0.50],
-        [id:4, name:'item 4',  description: 'something', currency:'GBP', listPrice:0.50],
+                [id:1, name:'item 1', description: 'something',  currency:'GBP', listPrice:1.10],
+                [id:2, name:'item 2', description: 'something', currency:'GBP', listPrice:1.00],
+                [id:1, name:'item 1',  description: 'something', currency:'GBP', listPrice:1.10],
+                [id:1, name:'item 1',  description: 'something', currency:'GBP', listPrice:1.10],
+                [id:3, name:'item 3',  description: 'something',currency:'GBP', listPrice:0.50],
+                [id:4, name:'item 4',  description: 'something', currency:'GBP', listPrice:0.50],
         ]
         instance.finalTotal=2.50
         instance.subTotal=12.50
@@ -65,7 +65,8 @@ class TestController {
     /**
      * Test form buttons just like above but params or map sent by controller instead
      * @return
-     *  finalTotal: 1.10,  //override calculation from cart items below with your own final figure
+     *   //override calculation from cart items below with your own final figure
+     *                   finalTotal: 1.10,
      */
     def testControllerButtons() {
         Map instance=[
@@ -84,17 +85,17 @@ class TestController {
                         title:'Mr',
                         firstName:'fred',
                         lastName: 'Smith',
-                        line1: '1 Long lane',
-                        line2: 'Big street',
+                        line1: '1aaaqqa Long lane',
+                        line2: 'Bigaaa street',
                         city: 'London',
                         state:'x',
                         country: 'United Kingdom',
                         countryCode: 'GB',  //should default to set value in PaymentConfig if not set
                         postcode:'se11at',
-
                         telephone:'12345',
                         emailAddress:'fred@example.fred.smith.a11.a10.com',
-                        saveInfo:false
+                        username: 'fred@example.fred.smith.a11.a10.com',
+                        remoteCall:true,
                 ]
         ]
 
@@ -140,8 +141,6 @@ class TestController {
     }
 
 }
-
-
 ```
 >/test/_menu.gsp
 

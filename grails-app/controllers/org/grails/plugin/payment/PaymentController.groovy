@@ -308,6 +308,12 @@ class PaymentController {
         // Todo you must store your current logged in user as session.user
         bean.bindBean(session?.cart as List,session?.cartCounter as Map,PUBLIC_KEY, (PaymentUser)session.user)
         updatePayConfig(bean)
+
+        if (!bean?.cart && !session?.cart) {
+            redirect(controller:'payment', view:'index')
+            return
+        }
+
         render view:'checkout', model: [instance:bean]
     }
 

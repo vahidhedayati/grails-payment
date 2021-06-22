@@ -28,17 +28,17 @@
         </div>
     </div>
     <div class="row">
-        <div class="transSummaryItem col card-header card-info">
+        <div class="transSummaryItem col ">
             <span class="transSummaryItemName">Item Name:</span>
         </div>
-        <div class="transSummaryItem col card-header card-info">
+        <div class="transSummaryItem col">
             <span class="transSummaryItemName">Quantity:</span>
         </div>
-        <div class="transSummaryItem col card-header card-info">
+        <div class="transSummaryItem col">
             <span class="transSummaryItemName">Price:</span>
         </div>
     </div>
-    <div class="row">
+
         <g:each var="paymentItem" in="${payment.paymentItems}">
             <div class="row">
                 <div class="transSummaryItem col">
@@ -52,7 +52,7 @@
                 </div>
             </div>
         </g:each>
-    </div>
+
 </div>
 
 <p>&nbsp;</p>
@@ -169,7 +169,7 @@
         </g:if>
         <g:if test="${payment?.tax}">
             <div class="col">
-                <span class="transSummaryItemName">Tax:       <b>${payment.tax}</b></span>
+                <span class="transSummaryItemName">Tax: <b>${payment.tax}</b></span>
             </div>
         </g:if>
         <g:if test="${payment?.gross}">
