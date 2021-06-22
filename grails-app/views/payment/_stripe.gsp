@@ -75,7 +75,66 @@
         });
     }
 
+    var cardElement;
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("stripeSubmit").addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+            //triggerBrowserValidation();
+
+            var plainInputsValid = true;
+            Array.prototype.forEach.call(form.querySelectorAll('input'), function (
+                input
+            ) {
+                if (input.checkValidity && !input.checkValidity()) {
+                    plainInputsValid = false;
+                    return;
+                }
+            });
+            if (!plainInputsValid) {
+                triggerBrowserValidation();
+                return;
+            }
+
+            var name = document.getElementById("firstName").value + ' ' + document.getElementById("lastName").value
+            var address1 = document.getElementById("line1").value + ' ' + document.getElementById("line2").value
+            var city = document.getElementById("city").value
+            var state = document.getElementById("state").value
+            var country = document.getElementById("country").value
+            var zip = document.getElementById("postcode").value
+
+            var additionalData = {
+                name: name ? name : undefined,
+                address_line1: address1 ? address1 : undefined,
+                address_city: city ? city : undefined,
+                address_state: state ? state : undefined,
+                address_country: country ? country : undefined,
+                address_zip: zip ? zip : undefined,
+            }
+
+
+             try {
+            stripe.createToken(cardElement, additionalData).then(function (result) {
+                if (result.token) {
+                    window.document.getElementById("stripeToken").value = result.token.id;
+                    document.getElementById("form").submit();
+                    //return true;
+                    //form.action = '/payment/stripecheckout';
+                   // form.submit();
+                   // setTimeout(function() {return true}, 113000)
+                    // document.getElementById("form").submit();
+
+                }
+            });
+            } catch (e) {
+               console.log('stripe.createToken'+JSON.stringify(e))
+             }
+        });
+    })
+
     function enableStripe() {
+        window.document.getElementById("form").action = '/payment/stripecheckout'
         var elements = stripe.elements();
         var cardNumber = elements.create('cardNumber', {
             style: elementStyles,
@@ -97,6 +156,7 @@
             placeholder: 'Cvc',
         });
         cardCvc.mount('#card-cvc');
+        cardElement = cardNumber
         registerElements(stripe,[cardNumber, cardExpiry, cardCvc]);
         document.getElementById("nonStripeSquare").style.display = "none";
         document.getElementById("stripeCardFields").style.display = "block";
@@ -105,54 +165,7 @@
     }
     function registerElements(stripe,elements) {
         updateElements(elements);
-        document.getElementById("stripeSubmit").addEventListener("click", function(e) {
-            e.preventDefault();
-            triggerBrowserValidation();
 
-            var plainInputsValid = true;
-            Array.prototype.forEach.call(form.querySelectorAll('input'), function(
-                input
-            ) {
-                if (input.checkValidity && !input.checkValidity()) {
-                    plainInputsValid = false;
-                    return;
-                }
-            });
-            if (!plainInputsValid) {
-                triggerBrowserValidation();
-                return;
-            }
-
-            var name = document.getElementById("firstName").value+' '+document.getElementById("lastName").value
-            var address1 = document.getElementById("line1").value+' '+document.getElementById("line2").value
-            var city =  document.getElementById("city").value
-            var state = document.getElementById("state").value
-            var country = document.getElementById("country").value
-            var zip = document.getElementById("postcode").value
-
-            var additionalData = {
-                name: name ? name : undefined,
-                address_line1: address1 ? address1 : undefined,
-                address_city: city ? city  : undefined,
-                address_state: state ? state  : undefined,
-                address_country: country ? country  : undefined,
-                address_zip: zip ? zip  : undefined,
-            }
-            document.getElementById("form").action = '/payment/stripecheckout'
-            try {
-                stripe.createToken(elements[0], additionalData).then(function(result) {
-                    if (result.token) {
-                        document.getElementById("stripeToken").value=result.token.id
-                        //form.action = '/payment/stripecheckout';
-                        //form.submit();
-                        document.getElementById("form").submit();
-
-                    }
-                });
-            } catch (e) {
-                console.log('stripe.createToken'+JSON.stringify(e))
-            }
-        });
     }
     function enableInputs() {
         Array.prototype.forEach.call(

@@ -16,10 +16,11 @@ import org.grails.plugin.payment.util.PaymentHelper
 
 class PaymentController {
 
-    static defaultAction = "checkout"
+    static defaultAction = "index"
     def paymentService
     def stripeService
     def squareService
+    def userService
 
     private String getSECRET_KEY() {
         return stripeService.configuration.stripeSecretKey
@@ -29,6 +30,36 @@ class PaymentController {
         return stripeService.configuration.stripePublishableKey
     }
 
+    private def getIfCheckoutEnabled() {
+        if (!PaymentConfigListener.paymentCheckoutEnabled) {
+            redirect(controller:'payment', action:'index')
+            return
+        }
+    }
+    private def getIfPaypalEnabled() {
+        if (!PaymentConfigListener.paypalEnabled) {
+            redirect(controller:'payment', action:'index')
+            return
+        }
+    }
+
+    private def getIfStripeEnabled() {
+        if (!PaymentConfigListener.stripeEnabled) {
+            redirect(controller:'payment', action:'index')
+            return
+        }
+    }
+
+    private def getIfSquareEnabled() {
+        if (!PaymentConfigListener.squareEnabled) {
+            redirect(controller:'payment', action:'index')
+            return
+        }
+    }
+
+    def index() {
+
+    }
 
     /**
      * Thanks is called by stripe and square final actions
@@ -45,13 +76,9 @@ class PaymentController {
             } else if (provider == 'square') {
                 payment = SquarePayment.get(realPaymentId)
             }
-
-            /**
-             * You will need to cross check your user
-             * This is needed to ensure not any user can view any other users thanks / purchase summary page
-             *
             if (payment && payment?.user) {
-                if (userService.currentUser) {
+                //TODO - PLUGIN does not have a userService this is for your app !!!!!
+                if (userService && userService?.currentUser) {
                     // this is when current user is actually logged in
                     // we check to see if payment.user matches currentUser -
                     //
@@ -75,12 +102,11 @@ class PaymentController {
                 render view: view
                 return
             }
-            */
-
         }
         String template = "/templates/${provider}summary"
         //Above loop should capture bad users and send them away otherwise all good users will see this
         render view: 'thanks', model: [payment:payment, template:template]
+        return
     }
 
 
@@ -91,6 +117,7 @@ class PaymentController {
      * @return
      */
     def paypalcheckout(CartBean bean) {
+        ifPaypalEnabled
         updateBean(bean)
         try {
             if (!bean.hasErrors()) {
@@ -102,6 +129,7 @@ class PaymentController {
                 }
             }
         } catch (Throwable t) {
+           // throw new Throwable(t)
             flash.message = "Generic exception: ${t.getMessage()}."
             log.error t.message, t.stackTrace
             bean.errors.reject('exception',[t.toString(),System.currentTimeMillis()].toArray(),t.toString())
@@ -126,20 +154,29 @@ class PaymentController {
         validateCart
         updatePayConfig(bean)
 
-        // Todo - where does your current logged in user reside in ?
-        def userFound  // = userService?.currentUser
-        if (userFound) {
+        if (session?.user && !bean.user) {
             bean.user = userFound
         }
-        if (session?.cart) {
+        if (session?.cart && !bean?.cart) {
             bean.cart = session?.cart
         }
-        bean.cartCounter = session?.cartCounter
+        if (!bean.finalTotal) {
+            bean.finalTotal = bean?.cart*.listPrice?.sum()?: session?.finalTotal
+        }
+        if (!bean.subTotal && bean.finalTotal) {
+            bean.subTotal = bean.finalTotal
+        }
+
+
+        if (session?.cartCounter && !bean?.cartCounter) {
+            bean.cartCounter = session?.cartCounter
+        }
         bean.validate()
         return bean
     }
 
     def squarecheckout(CartBean bean) {
+        ifSquareEnabled
         updateBean(bean)
         try {
             bean = paymentService.setCartUserAddress((CartBean) bean)
@@ -174,6 +211,7 @@ class PaymentController {
                 if (squarePayment && squarePayment?.id) {
                     flash.message = "Your order succeeded"
                     Map returnParams = [provider:'square', realPaymentId: squarePayment?.id]
+                    session.currentUser = bean.user
                     session.cart = null
                     session.cartCounter = null
                     chain(action: 'thanks', params: returnParams)
@@ -199,7 +237,7 @@ class PaymentController {
         }
         session.cart = null
         session.cartCounter = null
-        chain(controller:'payment', action: 'index')
+        chain(controller:'payment', action: 'checkout')
         return
 
     }
@@ -209,12 +247,13 @@ class PaymentController {
      * @return
      */
     def stripecheckout(CartBean bean) {
+        ifStripeEnabled
         updateBean(bean)
         Stripe.apiKey =  SECRET_KEY
         //boolean failed
         try {
             Map<String, ?> chargeParams = new HashMap<String, Object>()
-            chargeParams.put("amount", (bean.finalTotal * 100).intValue()); // Amount in cents
+            chargeParams.put("amount", (bean?.finalTotal * 100).intValue()); // Amount in cents
            // chargeParams.put("currency", bean.currencyCode as String)
             chargeParams.currency=bean?.currencyCode?: PaymentConfigListener.currencyCode?.toString()?:Currency.getInstance(Locale.UK).currencyCode
             bean = paymentService.setCartUserAddress(bean)
@@ -243,6 +282,7 @@ class PaymentController {
             bean.stripe=stripeBean
         } catch (Throwable e) {
             log.error e.message, e.stackTrace
+           // throw new Throwable(e)
             flash.message = "Generic exception: ${e.getMessage()}."
             bean.errors.reject('exception',[e.toString(),System.currentTimeMillis()].toArray(),e.toString())
             render view:'checkout', model: [instance:bean]
@@ -263,6 +303,7 @@ class PaymentController {
 
 
     def checkout(CartBean bean) {
+        ifCheckoutEnabled
         validateCart
         // Todo you must store your current logged in user as session.user
         bean.bindBean(session?.cart as List,session?.cartCounter as Map,PUBLIC_KEY, (PaymentUser)session.user)
@@ -276,7 +317,7 @@ class PaymentController {
 
     private getValidateCart() {
         if (session?.cart && session?.cart?.size()==0||!session.cart) {
-        //    redirect(controller:'payment', action:'index')
+        //    redirect(controller:'payment', action:'checkout')
         }
     }
 

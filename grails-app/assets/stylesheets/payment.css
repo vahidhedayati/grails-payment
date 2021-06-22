@@ -1,0 +1,116 @@
+.row {
+    position: relative;
+    max-width: 1400px;
+    margin: 0 0 0 0 !important;
+    padding: 0 5%
+}
+.card-shadow {
+    box-shadow: rgba(0, 0, 0, 0.3) 7px 7px 7px;
+}
+.title {
+    margin-bottom: 2vh
+}
+.margin-top-2 {
+    margin-top: 2vh
+}
+.card {
+    margin: auto;
+    /*max-width: 950px;*/
+    width: 90%;
+    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 1rem;
+    border: transparent
+}
+.card :after{
+    display: block;
+    content: "";
+    clear: both;
+}
+@media(max-width:767px) {
+    card {
+        margin: 3vh auto
+    }
+}
+
+cart {
+    background-color: #fff;
+    padding: 4vh 5vh;
+    border-bottom-left-radius: 1rem;
+    border-top-left-radius: 1rem
+}
+
+@media(max-width:767px) {
+    .cart {
+        padding: 4vh;
+        border-bottom-left-radius: unset;
+        border-top-right-radius: 1rem
+    }
+}
+
+#shoppingCart .summary {
+    background-color: #ddd;
+    border-top-right-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    padding: 4vh;
+    color: rgb(65, 65, 65)
+}
+
+@media(max-width:767px) {
+    #shoppingCart .summary {
+        border-top-right-radius: unset;
+        border-bottom-left-radius: 1rem
+    }
+}
+
+#shoppingCart .summary .col-2 {
+    padding: 0
+}
+
+#shoppingCart .summary .col-10 {
+    padding: 0
+}
+
+#shoppingCart .row {
+    margin: 0
+}
+
+#shoppingCart .title b {
+    font-size: 1.5rem
+}
+
+#shoppingCart .main {
+    margin: 0;
+    padding: 2vh 0;
+    width: 100%
+}
+
+#shoppingCart .col-2,
+#shoppingCart .col {
+    padding: 0 1vh
+}
+
+#shoppingCart>a {
+    padding: 0 1vh
+}
+
+#shoppingCart .close {
+    margin-left: auto;
+    font-size: 0.7rem
+}
+
+
+#shoppingCart .back-to-shop {
+    margin-top: 4.5rem
+}
+
+#shoppingCart>h5 {
+    margin-top: 4vh
+}
+
+#shoppingCart>hr {
+    margin-top: 1.25rem
+}
+
+#shoppingCart>form {
+    padding: 2vh 0
+}

@@ -1,6 +1,7 @@
 
 payment {
     paymentConfigEnabled = true
+    paymentCheckoutEnabled = true
     currencyCode = org.grails.plugin.payment.enums.CurrencyTypes.GBP
     countryCode = org.grails.plugin.payment.enums.CountryCode.GB
     hostName = "http://localhost:8080"
@@ -35,7 +36,7 @@ payment {
         }
     }
     stripe {
-        ecretKey = 'YOUR_LIVE_SECRET_KEY'
+        secretKey = 'YOUR_LIVE_SECRET_KEY'
         publishableKey = 'YOUR_LIVE_PUBLISHABLE_KEY'
         enabled=true
         mode='sandbox'  // choose sandbox or live in web interface

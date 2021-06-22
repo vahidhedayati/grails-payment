@@ -5,6 +5,7 @@ import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
 import org.grails.plugin.payment.PaymentItem
 import org.grails.plugin.payment.beans.CheckoutBean
+import org.grails.plugin.payment.listeners.PaymentConfigListener
 
 @Transactional(readOnly = true)
 class PaypalController {
@@ -39,7 +40,8 @@ class PaypalController {
                 addressInfo.line1 = storedPayment?.postalAddress?.line1
             }
             if (!storedPayment?.postalAddress?.countryCode && storedPayment?.postalAddress?.country) {
-                storedPayment?.postalAddress?.countryCode =  org.grails.plugin.payment.enums.CountryCode.valueOf(storedPayment?.postalAddress?.country)?.toString()
+                storedPayment?.postalAddress?.countryCode = PaymentConfigListener.countryCode?.toString()?:
+                        org.grails.plugin.payment.enums.CountryCode.values()?.find{it.name == storedPayment?.postalAddress?.country}?.toString()
             }
             addressInfo.countryCode = storedPayment?.postalAddress?.countryCode
             addressInfo.city = storedPayment.postalAddress?.city

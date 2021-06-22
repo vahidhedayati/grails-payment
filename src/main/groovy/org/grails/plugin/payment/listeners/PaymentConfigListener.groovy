@@ -78,6 +78,9 @@ class PaymentConfigListener {
     public static boolean getPaymentConfigEnabled(String configName='paymentConfigEnabled') {
         getBooleanField(configName)
     }
+    public static boolean getPaymentCheckoutEnabled(String configName='paymentCheckoutEnabled') {
+        getBooleanField(configName)
+    }
 
     public static boolean getBooleanField(String configName='enableContactForm') {
         return Boolean.valueOf(GENERIC_MAP.get(configName))

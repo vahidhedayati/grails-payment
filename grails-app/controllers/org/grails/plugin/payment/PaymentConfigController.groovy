@@ -14,8 +14,8 @@ class PaymentConfigController {
     static allowedMethods = [save: "POST", upload:"POST", update: "PUT", delete: "DELETE"]
 
     private def getIfEnabled() {
-        if (!PaymentConfigListener.squareEnabled) {
-            redirect (controller:'payment', action:'checkout')
+        if (!PaymentConfigListener.paymentConfigEnabled) {
+            redirect(controller:'payment', action:'index')
             return
         }
     }

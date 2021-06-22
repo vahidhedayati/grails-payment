@@ -43,12 +43,14 @@ class PaymentService {
 
             params.stripeEnabled = grailsApplication?.config?.payment?.stripe?.enabled
             params.stripeMode = grailsApplication?.config?.payment?.stripe?.mode
+            params.stripeSecretKey = grailsApplication?.config?.payment?.stripe?.secretKey
             params.stripeTestSecretKey = grailsApplication?.config?.payment?.stripe?.test.secretKey
             params.stripeTestPublishableKey = grailsApplication?.config?.payment?.stripe?.test.publishableKey
-            params.stripeSecretKey = grailsApplication?.config?.payment?.stripe?.secretKey
+            params.stripeApplicationSecret = grailsApplication?.config?.payment?.stripe?.applicationSecret
             params.stripePublishableKey = grailsApplication?.config?.payment?.stripe?.publishableKey
 
             params.paymentConfigEnabled = grailsApplication?.config?.payment?.paymentConfigEnabled
+            params.paymentCheckoutEnabled = grailsApplication?.config?.payment?.paymentCheckoutEnabled
 
             params.squareSandboxApplicationId = grailsApplication?.config?.payment?.square?.sandbox?.applicationId
             params.squareSandboxAccessToken = grailsApplication?.config?.payment?.square?.sandbox?.accessToken
@@ -79,7 +81,7 @@ class PaymentService {
         if (paymentConfig && paymentConfig?.id) {
 
             PaymentConfigListener.updateGeneric('paymentConfigEnabled',(paymentConfig?.paymentConfigEnabled).toString())
-
+            PaymentConfigListener.updateGeneric('paymentCheckoutEnabled',(paymentConfig?.paymentCheckoutEnabled).toString())
 
             PaymentConfigListener.updateGeneric('paypalEnabled',(paymentConfig?.paypalEnabled).toString())
 
@@ -111,26 +113,25 @@ class PaymentService {
                 PaymentConfigListener.updateGeneric('paypalMode', paymentConfig?.paypalMode)
             }
 
+
             PaymentConfigListener.updateGeneric('stripeEnabled',(paymentConfig?.stripeEnabled).toString())
             if (paymentConfig?.stripeMode) {
                 PaymentConfigListener.updateGeneric('stripeMode', paymentConfig?.stripeMode)
             }
 
-            if (paymentConfig?.stripeSecretKey) {
-                PaymentConfigListener.updateGeneric('stripeSecretKey', paymentConfig?.stripeSecretKey)
-            }
             if (paymentConfig?.stripePublishableKey) {
                 PaymentConfigListener.updateGeneric('stripePublishableKey', paymentConfig?.stripePublishableKey)
             }
-
             if (paymentConfig?.stripeTestPublishableKey) {
                 PaymentConfigListener.updateGeneric('stripeTestPublishableKey', paymentConfig?.stripeTestPublishableKey)
+            }
+
+            if (paymentConfig?.stripeSecretKey) {
+                PaymentConfigListener.updateGeneric('stripeSecretKey', paymentConfig?.stripeSecretKey)
             }
             if (paymentConfig?.stripeTestSecretKey) {
                 PaymentConfigListener.updateGeneric('stripeTestSecretKey', paymentConfig?.stripeTestSecretKey)
             }
-
-
 
             PaymentConfigListener.updateGeneric('squareEnabled',(paymentConfig?.squareEnabled).toString())
             if (paymentConfig?.squareMode) {
@@ -139,19 +140,6 @@ class PaymentService {
             if (paymentConfig?.squareSandboxApplicationId) {
                 PaymentConfigListener.updateGeneric('squareSandboxApplicationId', paymentConfig?.squareSandboxApplicationId)
             }
-            if (paymentConfig?.squareSandboxAccessToken) {
-                PaymentConfigListener.updateGeneric('squareSandboxAccessToken', paymentConfig?.squareSandboxAccessToken)
-            }
-            if (paymentConfig?.squareSandboxAccessToken) {
-                PaymentConfigListener.updateGeneric('squareSandboxAccessToken', paymentConfig?.squareSandboxAccessToken)
-            }
-            if (paymentConfig?.squareSandboxApplicationSecret) {
-                PaymentConfigListener.updateGeneric('squareSandboxApplicationSecret', paymentConfig?.squareSandboxApplicationSecret)
-            }
-            if (paymentConfig?.squareApplicationId) {
-                PaymentConfigListener.updateGeneric('squareApplicationId', paymentConfig?.squareApplicationId)
-            }
-
             if (paymentConfig?.squareApplicationId) {
                 PaymentConfigListener.updateGeneric('squareApplicationId', paymentConfig?.squareApplicationId)
             }
@@ -159,9 +147,19 @@ class PaymentService {
             if (paymentConfig?.squareAccessToken) {
                 PaymentConfigListener.updateGeneric('squareAccessToken', paymentConfig?.squareAccessToken)
             }
+            if (paymentConfig?.squareSandboxAccessToken) {
+                PaymentConfigListener.updateGeneric('squareSandboxAccessToken', paymentConfig?.squareSandboxAccessToken)
+            }
+
+            if (paymentConfig?.squareSandboxApplicationSecret) {
+                PaymentConfigListener.updateGeneric('squareSandboxApplicationSecret', paymentConfig?.squareSandboxApplicationSecret)
+            }
+
             if (paymentConfig?.squareApplicationSecret) {
                 PaymentConfigListener.updateGeneric('squareApplicationSecret', paymentConfig?.squareApplicationSecret)
             }
+
+
             if (paymentConfig?.squareLocation) {
                 PaymentConfigListener.updateGeneric('squareLocation', paymentConfig?.squareLocation)
             }
@@ -249,22 +247,35 @@ class PaymentService {
                 // Since we have no user we will secretly add this as a user bound to their required emailAddress
                 if (!bean.address.username && bean.address.emailAddress && bean.address.saveInfo)  {
                     bean.address.username=bean.address.emailAddress
-                }
-                PaymentUser user
-                if (bean?.address.username) {
-                    user = PaymentUser.findByUsername(bean?.address.username)
-                    if (user) {
-                        bean.errors.reject('usernameTaken.label', "Username ${bean?.address?.username} already in use ")
-                        throw new ValidationException("Duplicate username Exception", bean.errors)
+                } else if (!bean.address.username && bean.address.emailAddress && !bean.address.saveInfo)  {
+                    def result =detectUserInfo(bean.address.loadValues().clone())
+                    bean.selectedAddress  = result?.address ? result.address : null
+                    bean.user = result?.user ? result.user : null
+                    if (result.username && !bean?.user) {
+                        bean.address.username=result.username
+                        bean.address.primaryAddress=true
+                        result = addUser(bean.address.loadValues().clone())
+                        bean.user = result?.user
+                        bean.selectedAddress = result?.address
                     }
+                } else {
+                    PaymentUser user
+                    if (bean?.address.username) {
+                        user = PaymentUser.findByUsername(bean?.address.username)
+                        if (user) {
+                            bean.errors.reject('usernameTaken.label', "Username ${bean?.address?.username} already in use ")
+                            throw new ValidationException("Duplicate username Exception", bean.errors)
+                        }
+                    }
+                    // Even though not requested we want to add them to the system
+                    def result = addUser(bean.address.loadValues().clone(), user)
+                    if (result?.user) {
+                        bean.user = result?.user
+                    }
+                    //This way we have a structured address stored and accessible like any other user
+                    bean.selectedAddress = result?.address
                 }
-                // Even though not requested we want to add them to the system
-                def result = addUser(bean.address.loadValues().clone(), user)
-                if (result?.user) {
-                    bean.user = result?.user
-                }
-                //This way we have a structured address stored and accessible like any other user
-                bean.selectedAddress = result?.address
+
             } else {
                 if (bean?.address?.id && !bean?.newAddress?.firstName) {
                     bean.address.saveInfo=true
@@ -339,15 +350,36 @@ class PaymentService {
     BasePayment doPayment(BasePayment payment, CartBean bean) {
         payment.user  = bean.user
         payment.postalAddress = bean.selectedAddress
-        payment.gross = (bean?.finalTotal ?: session?.cart*.listPrice.sum())
+        payment.gross = (bean?.finalTotal ?: session?.cart*.listPrice?.sum()?: session?.finalTotal  )
         payment.shipping = (bean?.shipping?:0.00d)
+        payment.hideUserDetails = (bean.address.saveInfo == true ? false : true )
         payment.currency = Currency.getInstance(bean?.currencyCode?bean?.currencyCode?.toString():PaymentConfigListener.currencyCode?.toString())
         List doneIds=[]
-        bean.cart?.each { item ->
+        bean?.cart?.each { item ->
             if (!doneIds.contains(item.id)) {
                 int qty = bean.cartCounter[item.id]
 
-                // TODO load product information over paymentItem
+                /**
+                 * TODO - this is relying on flat map passed into bean as cart it probably started as a session
+                 * or set value by yourself - but it isn't tied to any actual products and is up for manipulation
+                 * - you should revisit this segment override service method in local app to call product like
+                 * method below to actually load up paymentItem based on what is on your DB -
+                 *
+                 */
+
+
+                PaymentItem paymentItem = new PaymentItem()
+                paymentItem.itemName =item?.name
+                paymentItem.description = item?.description?:item?.name
+                paymentItem.itemNumber = item?.id
+                paymentItem.amount = item?.listPrice
+                paymentItem.quantity = qty
+
+                payment.addToPaymentItems(paymentItem)
+                doneIds << item?.id
+                log.info "paymentItem  ${paymentItem}"
+
+                // TODO load product information over paymentItem at moment happening from bean.cart as above
                 // plugin does not contain products !
 
                // YourProduct product = YourProduct.get(item.id as Long)
@@ -360,7 +392,6 @@ class PaymentService {
                   // only works with our modified paypal paymentItem
                // paymentItem.weight = product.shipWeight
 
-                //TODO figure out shippingAmount - based on shipping costs I guess
                 //payment.addToPaymentItems(paymentItem)
                 doneIds << item?.id
                 //log.info "paymentItem  ${paymentItem}"
@@ -425,7 +456,6 @@ class PaymentService {
     }
     @Transactional
     def addUser(Map input, PaymentUser user = null) {
-
         PaymentAddress address
         if (!user) {
 
@@ -479,12 +509,16 @@ class PaymentService {
                 int found = PaymentUser.findAllByUsernameLike("${input.emailAddress}%")?.size()
                 String username= incrementEmailAddress(input.emailAddress,found)
                 user = PaymentUser.findByUsername(username)
-                boolean run = true
-                while (user !=null) {
-                    username= incrementEmailAddress(input.emailAddress,found)
-                    user = PaymentUser.findByUsername(username)
-                    results.username = username
-                    found++
+                if (!user) {
+                    results.username=username
+                } else {
+                    boolean run = true
+                    while (user !=null) {
+                        username= incrementEmailAddress(input.emailAddress,found)
+                        user = PaymentUser.findByUsername(username)
+                        results.username = username
+                        found++
+                    }
                 }
             }
             results.user = user

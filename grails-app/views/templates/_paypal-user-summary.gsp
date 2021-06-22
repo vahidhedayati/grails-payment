@@ -58,15 +58,15 @@
 </table>
 
 <g:if test="${!payment.hideUserDetails}">
-    <div class="col-sm-12 panel-danger">
-        <div class="panel-heading panel-danger">
+    <div class="col-sm-12 card-danger">
+        <div class="card-header card-danger">
             Authentication information
         </div>
-        <div class="panel-info">
-            <div class="transSummaryItem col-sm-3 panel-heading panel-info">
+        <div class="card-info">
+            <div class="transSummaryItem col-sm-3 card-header card-info">
                 <span class="transSummaryItemName">Username:</span>
             </div>
-            <div class="transSummaryItem col-sm-3 panel-heading panel-info">
+            <div class="transSummaryItem col-sm-3 card-header card-info">
                 <span class="transSummaryItemName"><b>${user.username}</b></span>
             </div>
         </div>

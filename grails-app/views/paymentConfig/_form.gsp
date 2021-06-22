@@ -1,10 +1,30 @@
 <%@ page import="org.grails.plugin.payment.PaymentConfig" %>
-<div class="panel-heading panel-primary">
-    Tick to enable features
+<div class="title">
+    <div class="row">
+        <div class="col">
+            <h4><b>Tick to enable features</b></h4>
+        </div>
+    </div>
 </div>
+
+<div class="row">
+    <div class="col">
+        <label>
+            <g:message code="paymentConfigControllerEnabled.label" default="paymentConfigControllerEnabled.label"/>
+        </label>
+        <g:checkBox name="paymentConfigEnabled" checked="${paymentConfig?.paymentConfigEnabled?:false}"/>
+    </div>
+    <div class="col">
+        <label>
+            <g:message code="paymentCheckoutEnabled.label" />
+        </label>
+        <g:checkBox name="paymentCheckoutEnabled" checked="${paymentConfig?.paymentCheckoutEnabled?:false}"/>
+    </div>
+</div>
+
 <div class="btn btn-trans">
     <label for="paypalEnabled">
-        <g:message code="paypalEnabled.label" default="default.countryCode.label"/>
+        <g:message code="paypalEnabled.label" default="paypalEnabled.label"/>
     </label>
 
     <g:checkBox name="paypalEnabled" checked="${paymentConfig?.paypalEnabled?:false}"/>

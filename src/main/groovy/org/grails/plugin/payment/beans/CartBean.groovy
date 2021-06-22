@@ -1,14 +1,19 @@
 package org.grails.plugin.payment.beans
 
 import com.stripe.param.CustomerCreateParams
+import grails.util.Holders
 import grails.validation.Validateable
 import org.grails.plugin.payment.PaymentAddress
 import org.grails.plugin.payment.PaymentUser
 import org.grails.plugin.payment.enums.CountryCode
 import org.grails.plugin.payment.listeners.PaymentConfigListener
+import org.grails.plugins.web.taglib.ApplicationTagLib
+import org.springframework.validation.FieldError
+import org.springframework.validation.ObjectError
 
 class CartBean implements Validateable  {
 
+    private ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
 
     AddressBean address
     AddressBean newAddress
@@ -19,6 +24,8 @@ class CartBean implements Validateable  {
     PaymentAddress selectedAddress
 
     boolean hasAddress
+
+    String editCartUrl = g.createLink(controller:'payment', action:'checkout')
 
     List cart=[]
     Map cartCounter=[:]
@@ -57,10 +64,15 @@ class CartBean implements Validateable  {
         newAddress nullable:true
 
 
+
     }
-    static def checkAddress={val,obj,errors->
-        if (obj.hasAddress && obj.paymentAddress && !obj.paymentAddress.id || !obj.hasAddress) {
-            //Validated child elements may
+    static def checkAddress={AddressBean val, obj,errors->
+            if (obj.hasAddress && obj.address && !obj.address.id || !obj.hasAddress) {
+            if (val) {
+                val?.errors?.allErrors?.each {  error ->
+                    errors.rejectValue(error.code, error.arguments, error.defaultMessage)
+                }
+            }
 
         }
     }
@@ -72,6 +84,7 @@ class CartBean implements Validateable  {
     def bindBean(List cart, Map cartCounter, String key,  PaymentUser authenticatedUser=null) {
         this.bindKey(key)
         this.cart = cart
+        this.cartCounter=cartCounter
         this.countryCode = this.countryCode? this.countryCode : PaymentConfigListener.countryCode
 
         if (authenticatedUser) {
@@ -154,7 +167,9 @@ class CartBean implements Validateable  {
         if (chosen) {
             result.country = chosen.country
             if (!chosen?.countryCode && chosen?.country) {
-                chosen?.countryCode =  org.grails.plugin.payment.enums.CountryCode.valueOf(chosen?.country)?.toString()
+                chosen?.countryCode =  CountryCode.values()?.
+                        find{it.name.toLowerCase() == chosen?.country?.toLowerCase()}?.toString() ?:
+                        PaymentConfigListener.countryCode?.toString()
             }
             result.countryCode = chosen.countryCode
             result.city = chosen.city
@@ -164,6 +179,15 @@ class CartBean implements Validateable  {
             result.postCode = chosen.postcode
             result.state = chosen.state
             //result.extraParams=[:]
+        }
+        return result
+    }
+
+    Integer getCartQuantity() {
+        Integer result = 0
+        Integer cartCount =cartCounter?.size()
+        if (cartCount) {
+            result = cartCount
         }
         return result
     }

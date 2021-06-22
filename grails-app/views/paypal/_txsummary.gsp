@@ -1,203 +1,182 @@
-
-<div class="col-sm-4  panel-warning">
-    <div class="panel-heading panel-warning">
-        Payment status
-    </div>
-    <div class=" panel-info">
-        <div class="transSummaryItem col-sm-6 panel-heading panel-info">
-            <span class="transSummaryItemName">Status:</span>
-        </div>
-        <div class="transSummaryItem col-sm-6 panel-heading panel-info">
-            <span class="transSummaryItemName">Paid:</span>
+<div class=" card ">
+    <div class="row">
+             <div class="title">
+        <div class="col">
+                    Payment status
+                </div>
         </div>
     </div>
-    <g:each var="sale" in="${payment?.sales}">
-        <div>
-            <div class="transSummaryItem  col-sm-6">
-                <span class="transSummaryItemValue">${sale.state}</span>
+<g:each var="sale" in="${payment?.sales}">
+    <div class="row">
+        <div class="col">
+            <span class="transSummaryItemName">Status: <b>${sale.state}</b></span>
+        </div>
+        <div class="col">
+            <span class="transSummaryItemName">Paid: <b>${sale.total}</b></span>
+        </div>
+    </div>
+    </div>
+</g:each>
+<div class="card">
+    <div class="row">
+        <div class="col">
+            <div class="card-body">
+                <div class="title">
+                    Items purchased
+                </div>
             </div>
-            <div class="transSummaryItem  col-sm-6">
-                <span class="transSummaryItemValue">${sale.total}</span>
-            </div>
         </div>
-    </g:each>
-</div>
-
-<div class="col-sm-8 panel-warning">
-    <div class="panel-heading panel-warning">
-        Items purchased
     </div>
-    <div class=" panel-info">
-        <div class="transSummaryItem col-sm-4 panel-heading panel-info">
+    <div class="row">
+        <div class="transSummaryItem col card-header card-info">
             <span class="transSummaryItemName">Item Name:</span>
         </div>
-        <div class="transSummaryItem col-sm-4 panel-heading panel-info">
+        <div class="transSummaryItem col card-header card-info">
             <span class="transSummaryItemName">Quantity:</span>
         </div>
-        <div class="transSummaryItem col-sm-4 panel-heading panel-info">
+        <div class="transSummaryItem col card-header card-info">
             <span class="transSummaryItemName">Price:</span>
         </div>
     </div>
-    <g:each var="paymentItem" in="${payment.paymentItems}">
-        <div >
-            <div class="transSummaryItem col-sm-4">
-                <span class="transSummaryItemValue">${paymentItem.itemName.encodeAsHTML()}</span>
+    <div class="row">
+        <g:each var="paymentItem" in="${payment.paymentItems}">
+            <div class="row">
+                <div class="transSummaryItem col">
+                    <span class="transSummaryItemValue">${paymentItem.itemName.encodeAsHTML()}</span>
+                </div>
+                <div class="transSummaryItem col">
+                    <span class="transSummaryItemValue">${paymentItem.quantity}</span>
+                </div>
+                <div class="transSummaryItem col">
+                    <span class="transSummaryItemValue">${paymentItem.amount * paymentItem.quantity}</span>
+                </div>
             </div>
-            <div class="transSummaryItem col-sm-4">
-                <span class="transSummaryItemValue">${paymentItem.quantity}</span>
-            </div>
-            <div class="transSummaryItem col-sm-4">
-                <span class="transSummaryItemValue">${paymentItem.amount * paymentItem.quantity}</span>
-            </div>
-        </div>
-    </g:each>
+        </g:each>
+    </div>
 </div>
 
+<p>&nbsp;</p>
 
 <g:if test="${user?.isAdmin}">
-    <div class="col-sm-4  panel-warning">
-        <div class="panel-heading panel-warning">
-            Paypal Response
-        </div>
-        <div class=" panel-info">
-            <div class="transSummaryItem col-sm-6 panel-heading panel-info">
-                <span class="transSummaryItemName">Paypal Email:</span>
-            </div>
-            <div class="transSummaryItem col-sm-3 panel-heading panel-info">
-                <span class="transSummaryItemName">User Status:</span>
-            </div>
-            <div class="transSummaryItem col-sm-3 panel-heading panel-info">
-                <span class="transSummaryItemName">Sale Completed:</span>
-            </div>
-        </div>
+    <div class="card">
+        <div class=col">
+            <div class="row">
+                <div class="col">
+                    <div class="title">
 
-            <div>
-                <div class="transSummaryItem  col-sm-6">
-                    <span class="transSummaryItemValue">${buyerInformation?.email}</span>
-                </div>
-                <div class="transSummaryItem  col-sm-3">
-                    <span class="transSummaryItemValue">${payment?.paypalUserStatus}</span>
-                </div>
-                <div class="transSummaryItem  col-sm-3">
-                    <span class="transSummaryItemValue">${payment?.completed}</span>
+                        Paypal Response
+                    </div>
                 </div>
             </div>
+            <div class=row">
 
-        <div class="panel-heading panel-warning">
-            Site Information
-        </div>
-        <div class=" panel-info">
-            <div class="transSummaryItem col-sm-6 panel-heading panel-info">
-                <span class="transSummaryItemName">User Email:</span>
-            </div>
-            <div class="transSummaryItem col-sm-3 panel-heading panel-info">
-                <span class="transSummaryItemName">User Username:</span>
-            </div>
-            <div class="transSummaryItem col-sm-3 panel-heading panel-info">
-                <span class="transSummaryItemName">Sale Email:</span>
+                <div class="transSummaryItem col">
+                    <span class="transSummaryItemName">Paypal Email: <b>${buyerInformation?.email}</b></span>
+                </div>
+                <div class="transSummaryItem col">
+                    <span class="transSummaryItemName">User Status: <b>${payment?.paypalUserStatus}</b></span>
+                </div>
+                <div class="transSummaryItem col">
+                    <span class="transSummaryItemName">Sale Completed: <b>${payment?.completed}</b></span>
+                </div>
             </div>
         </div>
 
-            <div>
-                <div class="transSummaryItem  col-sm-6">
-                    <span class="transSummaryItemValue">${user?.emailAddress}</span>
-                </div>
-                <div class="transSummaryItem  col-sm-3">
-                    <span class="transSummaryItemValue">${user?.username}</span>
-                </div>
-                <div class="transSummaryItem  col-sm-3">
-                    <span class="transSummaryItemValue">${postalAddress?.emailAddress}</span>
+
+        <div class=col">
+            <div class="row">
+                <div class="col">
+                    <div class="title">
+                        Site Information
+                    </div>
                 </div>
             </div>
 
-
-    </div>
-
-    <div class="col-sm-8 panel-warning">
-
-        <div class="row">
-            <div class="col-md-6">
-                <div class="panel-body">
-                    <address>
-                        <div class="center-block">
-                            <div class="panel-body">
-                                <h2>Postal details from site</h2>
-                                <hr/>
-
-                                <g:each in="${postalAddress?.addressArray}" var="line">
-                                    ${line}<br/>
-                                </g:each>
-                                ${postalAddress?.flatTelephone}
-                            </div>
-                        </div>
-                    </address>
+            <div class="row">
+                <div class="transSummaryItem col">
+                    <span class="transSummaryItemName">User Email: <b>${user?.emailAddress}</b></span>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="panel-body">
-                    <address>
-                        <div class="center-block">
-                            <div class="panel-body">
-                                <h2>Paypal Address Response</h2>
-                                <hr/>
-
-                                <g:each in="${buyerInformation?.addressArray}" var="line">
-                                    ${line}<br/>
-                                </g:each>
-                            </div>
-                        </div>
-                    </address>
+                <div class="transSummaryItem col">
+                    <span class="transSummaryItemName">User Username: <b>${user?.username}</b></span>
+                </div>
+                <div class="transSummaryItem col">
+                    <span class="transSummaryItemName">Sale Email: <b>${postalAddress?.emailAddress}</b></span>
                 </div>
             </div>
         </div>
     </div>
+    <div class="card">
+        <div class="col">
+            <div class="card-body">
+                <address>
+                    <div class="center-block">
+                        <div class=" title">
+                            <h2>Postal details from site</h2>
+                            <hr/>
+                            <g:each in="${postalAddress?.addressArray}" var="line">
+                                ${line}<br/>
+                            </g:each>
+                            ${postalAddress?.flatTelephone}
+                        </div>
+                    </div>
+                </address>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card-body">
+                <address>
+                    <div class="center-block">
+                        <div class=" title">
+                            <h2>Paypal Address Response</h2>
+                            <hr/>
+                            <g:each in="${buyerInformation?.addressArray}" var="line">
+                                ${line}<br/>
+                            </g:each>
+                        </div>
+                    </div>
+                </address>
+            </div>
+        </div>
+    </div>
+
 </g:if>
 
 <g:if test="${!payment.hideUserDetails && user && !user?.isAdmin}">
-    <div class="col-sm-12 panel-danger">
-        <div class="panel-heading panel-danger">
-            Authentication information
+    <div class="card">
+        <div class="col">
+            <div class="title">
+                Authentication information
+            </div>
         </div>
-        <div class="panel-info">
-            <div class="transSummaryItem col-sm-3 panel-heading panel-info">
-                <span class="transSummaryItemName">Username:</span>
-            </div>
-            <div class="transSummaryItem col-sm-3 panel-heading panel-info">
-                <span class="transSummaryItemName"><b>${user.username}</b></span>
-            </div>
+        <div class="col">
+            <span class="h4">Username: <b>${user.username}</b></span>
         </div>
     </div>
+
 </g:if>
-<div class="col-sm-12 panel-primary">
-    <div class="panel-heading panel-primary">
-        Shipping and final Totals
-    </div>
-    <div class=" panel-success">
-        <div class="transSummaryItem col-sm-4 panel-heading panel-success">
-            <span class="transSummaryItemName">Shipping:</span>
+<div class="card">
+    <div class="row">
+        <div class=" col">
+            <div class="title">
+                Shipping and final Totals
+            </div>
         </div>
-        <div class="transSummaryItem col-sm-4 panel-heading panel-success">
-            <span class="transSummaryItemName">Tax:</span>
-        </div>
-        <div class="transSummaryItem col-sm-4 panel-heading panel-success">
-            <span class="transSummaryItemName">Total:</span>
-        </div>
-    </div>
-    <div>
-        <div class="transSummaryItem col-sm-4">
-            <g:if test="${payment?.shipping}">
-                <span>${payment.shipping}</span>
-            </g:if>
-        </div>
-        <div class="transSummaryItem col-sm-4">
-            <g:if test="${payment?.tax}">
-                <span>${payment.tax}</span>
-            </g:if>
-        </div>
-        <div class="transSummaryItem col-sm-4">
-            <g:if test="${payment?.gross}">
-                <span>${payment.gross} ${payment.currency}</span>
-            </g:if>
-        </div>
+        <g:if test="${payment?.shipping}">
+            <div class="col">
+                <span class="transSummaryItemName">Shipping: <b>${payment.shipping}</b></span>
+            </div>
+        </g:if>
+        <g:if test="${payment?.tax}">
+            <div class="col">
+                <span class="transSummaryItemName">Tax:       <b>${payment.tax}</b></span>
+            </div>
+        </g:if>
+        <g:if test="${payment?.gross}">
+            <div class="col">
+                <span class="transSummaryItemName">Total:  <span>${payment.gross} ${payment.currency}</span></span>
+            </div>
+        </g:if>
     </div>
 </div>
+

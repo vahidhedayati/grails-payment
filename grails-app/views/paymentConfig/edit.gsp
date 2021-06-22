@@ -8,7 +8,7 @@
 <body>
 <div class="container">
     <g:render template="has-errors"/>
-    <div class="panel-body">
+    <div class="card-body">
 
         <g:form resource="${this.paymentConfig}" method="PUT">
             <g:hiddenField name="version" value="${this.paymentConfig?.version}"/>

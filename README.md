@@ -15,7 +15,7 @@ Installation for a grails 4 application
 dependencies {
 
  
-  compile "io.github.vahidhedayati:payment:0.1"
+  compile "io.github.vahidhedayati:payment:1.0.0"
 
   //You will only need this if you are looking to use square payment
   compile 'org.jetbrains.kotlin:kotlin-stdlib:1.3.70'
@@ -122,7 +122,9 @@ class BootStrap {
 
 Start up your test site, there will now be an additional 2 controllers available: 
 
->>http://localhost:8080/payment
+>>http://localhost:8080/payment   you will be working with:
+> 
+>>> http://localhost:8080/payment/checkout
 > 
  >>http://localhost:8080/paymentConfig 
 
@@ -138,8 +140,7 @@ If what you see in video is sufficient then all you need is the buttons
 
 Where you would pass instance which contains what the sample [checkout](https://github.com/vahidhedayati/grails-payment/blob/main/grails-app/views/payment/checkout.gsp)
 as part of the `instance` variable this would be all relevant input, all providers paypal, stripe & square have been fully implemented to create a customer on their systems which takes all of your users input by this I mean their address etc is also passed to the third party 
-and is also returned in their final response back to you. 
-`finalTotal` this is full total on your checkout being charged.
+and is also returned in their final response back to you.
 
 To figure out what variables / parameters are required refer to [CartBean](https://github.com/vahidhedayati/grails-payment/blob/main/src/main/groovy/org/grails/plugin/payment/beans/CartBean.groovy)
 
@@ -147,10 +148,12 @@ To figure out what variables / parameters are required refer to [CartBean](https
 
 ```gsp
      <!--CREDIT CART PAYMENT-->
-            <payment:buttons instance="${instance}" finalTotal="${finalTotal}" />
+            <payment:buttons instance="${instance}"  />
 ```
 
-Everything the user provides on the checkout page is captured in [AddressBean](https://github.com/vahidhedayati/grails-payment/blob/main/src/main/groovy/org/grails/plugin/payment/beans/AddressBean.groovy) So you need to ensure your instance has the user details / address details set provided
+Everything the user provides on the checkout page is captured in
+[AddressBean](https://github.com/vahidhedayati/grails-payment/blob/main/src/main/groovy/org/grails/plugin/payment/beans/AddressBean.groovy)
+So you need to ensure your instance has the user details / address details set provided
 your instance should look like:
 
 
@@ -159,7 +162,7 @@ your instance should look like:
      <!--CREDIT CART PAYMENT-->
             <payment:buttons instance="${[
                 finalTotal: 200,
-                currencyCode: 'GBP'  //defaults to PaymentConfig value if not set
+                currencyCode: 'GBP',  //defaults to PaymentConfig value if not set
                 address:[
                         title:'Mr',
                         firstName:'fred',
@@ -174,7 +177,7 @@ your instance should look like:
                         telephone:'12345'
                 ]   
             ]}" 
-            finalTotal="${200}" />
+            />
 ```
 
 The `CartBean` has a load more inputs most of it set by system.
@@ -213,3 +216,7 @@ step 2 [thanks](https://github.com/vahidhedayati/grails-payment/blob/main/grails
 Step 1 [stripecheckout](https://github.com/vahidhedayati/grails-payment/blob/main/grails-app/controllers/org/grails/plugin/payment/PaymentController.groovy#L212)
 
 Step 2 [thanks](https://github.com/vahidhedayati/grails-payment/blob/main/grails-app/controllers/org/grails/plugin/payment/PaymentController.groovy#L40)
+
+
+
+## [Sample Controller / views](https://github.com/vahidhedayati/grails-payment/blob/main/SAMPLE_CONTROLLER_VIEWS.md)

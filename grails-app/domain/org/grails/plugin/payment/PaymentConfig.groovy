@@ -9,7 +9,7 @@ class PaymentConfig {
     CountryCode countryCode= CountryCode.GB
 
     boolean paymentConfigEnabled=true
-
+    boolean paymentCheckoutEnabled=true
 
     final static String SANDBOX = 'sandbox'
     final static String LIVE = 'live'

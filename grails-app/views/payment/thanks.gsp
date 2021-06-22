@@ -2,54 +2,46 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="main"/>
-    <title>
-    <g:message code="shoppingCart.label"/>
-    </title>
+    <asset:stylesheet src="payment.css" />
+    <title><g:message code="thanksOrderPlaced.label" default="Thanks your order is now placed"/></title>
 </head>
-
 <body>
-<div class="container">
-    <div class="col-md-9 col-md-offset-2">
-        <div class="container wrapper">
-            <div class="row cart-head">
-                <div class="container">
+<div id="shoppingCart">
+<div class="card col-md-8">
+    <div class=" row">
 
-                    <div class="row">
-                        <p>&nbsp</p>
-                        <div class="col-sm-12 panel-primary panel-shadow">
-                            <div class="panel-heading ">
-                                <div class="transSummaryItem">
-                                    <span class="transSummaryItemName">Order ID:</span>
-                                    <span class="transSummaryItemValue"><b>${payment?.id}</b></span>
-                                    <span class="transSummaryItemName">Transaction ID:</span>
-                                    <span class="transSummaryItemValue"><b>${payment?.transactionId}</b></span>
-                                    <span class="navbar-right">
-                                        <span class="transSummaryItemName">Order Date:</span>
-                                        <span class="transSummaryItemValue"><b><g:formatDate date="${payment.dateCreated}" format="${g.message(code:'dateTime.format')}"/></b></span>
-                                        <span class="transSummaryItemName"></span>
-                                        <span class="transSummaryItemValue"><b>&nbsp;</b></span>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="panel-heading ">
-                                Thank you, your purchase is now complete, Item will be dispatched and be with you shortly.
+                <p>&nbsp</p>
+                <div class="card">
+                    <div class="card-header title">
+                        <div class="transSummaryItem row">
+                            <span class="transSummaryItemName col">Order ID: <b>${payment?.id}</b></span>
 
-                            </div>
+                            <span class="transSummaryItemName col">Transaction ID: <b>${payment?.transactionId}</b></span>
+
+                            <span class="navbar-right text-right col">
+                                <span class="transSummaryItemName">Order Date:</span>
+                                <span class="transSummaryItemValue"><b><g:formatDate date="${payment.dateCreated}" format="${g.message(code:'dateTime.format')}"/></b></span>
+                                <span class="transSummaryItemName"></span>
+                                <span class="transSummaryItemValue"><b>&nbsp;</b></span>
+                            </span>
                         </div>
-                        <br/>
-
-                        <div id="transactionSummary" class="transactionSummary">
-                            <g:if test="${payment}">
-                                <g:render template="${template}" model="[payment:payment,
-                                                                       user:payment.user,
-                                                                       postalAddress:payment?.postalAddress]"  />
-                            </g:if>
-                        </div>
+                    </div>
+                    <div class="card-header title">
+                        Thank you, your purchase is now complete, Item will be dispatched and be with you shortly.
                     </div>
                 </div>
             </div>
+
+        <div id="transactionSummary" class="transactionSummary ">
+            <g:if test="${payment}">
+                <g:render template="/templates/genericsummary"  model="[payment:payment,
+                                                                        templateFile:template,
+                                                                        user:payment.user,
+                                                                        postalAddress:payment?.postalAddress]"  />
+            </g:if>
         </div>
-    </div>
+
+</div>
 </div>
 </body>
 </html>

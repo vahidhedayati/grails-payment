@@ -9,7 +9,7 @@ buildscript {
     }
 }
 
-version "0.1"
+version "1.0.0"
 group "io.github.vahidhedayati"
 
 apply plugin:"eclipse"
@@ -108,7 +108,42 @@ tasks.withType(GroovyCompile) {
 }
 // enable if you wish to package this plugin as a standalone application
 bootJar.enabled = false
+
+
+
+afterEvaluate {
+    signing {
+        required { isReleaseVersion && gradle.taskGraph.hasTask("publish") }
+        sign publishing.publications.maven
+    }
+}
+
+tasks.withType(Sign) {
+    onlyIf { isReleaseVersion }
+}
+nexusPublishing {
+    repositories {
+        sonatype {
+
+            def ossUser = System.getenv("SONATYPE_USERNAME") ?: project.hasProperty("sonatypeOssUsername") ? project.sonatypeOssUsername : ''
+            def ossPass = System.getenv("SONATYPE_PASSWORD") ?: project.hasProperty("sonatypeOssPassword") ? project.sonatypeOssPassword : ''
+            def ossStagingProfileId = System.getenv("SONATYPE_STAGING_PROFILE_ID") ?: project.hasProperty("sonatypeOssStagingProfileId") ? project.sonatypeOssStagingProfileId : ''
+            nexusUrl = uri("https://s01.oss.sonatype.org/service/local/")
+            snapshotRepositoryUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            username = ossUser
+            password = ossPass
+            stagingProfileId = ossStagingProfileId
+        }
+    }
+}
+
+
+
 publishing {
+    repositories {
+        mavenLocal()
+    }
+
     publications {
         maven(MavenPublication) {
             groupId = project.group
@@ -142,33 +177,6 @@ publishing {
                     url = 'https://github.com/vahidhedayati/grails-payment/tree/main'
                 }
             }
-        }
-    }
-}
-
-
-afterEvaluate {
-    signing {
-        required { isReleaseVersion && gradle.taskGraph.hasTask("publish") }
-        sign publishing.publications.maven
-    }
-}
-
-tasks.withType(Sign) {
-    onlyIf { isReleaseVersion }
-}
-nexusPublishing {
-    repositories {
-        sonatype {
-
-            def ossUser = System.getenv("SONATYPE_USERNAME") ?: project.hasProperty("sonatypeOssUsername") ? project.sonatypeOssUsername : ''
-            def ossPass = System.getenv("SONATYPE_PASSWORD") ?: project.hasProperty("sonatypeOssPassword") ? project.sonatypeOssPassword : ''
-            def ossStagingProfileId = System.getenv("SONATYPE_STAGING_PROFILE_ID") ?: project.hasProperty("sonatypeOssStagingProfileId") ? project.sonatypeOssStagingProfileId : ''
-            nexusUrl = uri("https://s01.oss.sonatype.org/service/local/")
-            snapshotRepositoryUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-            username = ossUser
-            password = ossPass
-            stagingProfileId = ossStagingProfileId
         }
     }
 }
