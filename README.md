@@ -146,12 +146,50 @@ and is also returned in their final response back to you.
 
 To figure out what variables / parameters are required refer to [CartBean](https://github.com/vahidhedayati/grails-payment/blob/main/src/main/groovy/org/grails/plugin/payment/beans/CartBean.groovy)
 
+### 1. Buttons only feature 
 
+>controller/TestController
+```groovy
+ /**
+ * Test checkout with user who has existing address
+ * Action testUser is same as index instead variables come from controller
+ * or a service or where ever feeding controller
+ * it also attempts to load the first User entry so a user must be setup
+ * payment:checkout
+ * 
+ * The cart items is a flat list of items so if item id:1 is clicked twice it is listed twice
+ */
+def testUser() {
+ Map instance=[:]
+ instance.editCartUrl=g.createLink(controller:'test', action:'checkout')
+ //description used by doPayment in PaymentService when finalising sale
+ instance.cart=[
+         [id:1, name:'item 1', description: 'something',  currency:'GBP', listPrice:1.10],
+         [id:2, name:'item 2', description: 'something', currency:'GBP', listPrice:1.00],
+         [id:1, name:'item 1',  description: 'something', currency:'GBP', listPrice:1.10],
+         [id:1, name:'item 1',  description: 'something', currency:'GBP', listPrice:1.10],
+         [id:3, name:'item 3',  description: 'something',currency:'GBP', listPrice:0.50],
+         [id:4, name:'item 4',  description: 'something', currency:'GBP', listPrice:0.50],
+ ]
+ // if you set wrong finalTotal paypal will complain your items above cost is more than your given total
+ // you do not need to provide 2 below variables. If not set plugin will figure out based on items in your list above
+ //instance.finalTotal=2.50    
+ //instance.subTotal=12.50
+ 
+ // optional if you have an existing user set it here at the moment the form will auto fill address details  
+ instance.user= PaymentUser?.first()
 
+ render view:'testUser', model:[instance:instance]
+}
+
+```
+
+>/views/test/testuser  <payment:buttons
 ```gsp
      <!--CREDIT CART PAYMENT-->
             <payment:buttons instance="${instance}"  />
 ```
+
 
 Everything the user provides on the checkout page is captured in
 [AddressBean](https://github.com/vahidhedayati/grails-payment/blob/main/src/main/groovy/org/grails/plugin/payment/beans/AddressBean.groovy)
@@ -159,28 +197,150 @@ So you need to ensure your instance has the user details / address details set p
 your instance should look like:
 
 
-
+#### You can also provide address details and populate form like this 
+>/views/test/index.gsp
 ```gsp
      <!--CREDIT CART PAYMENT-->
             <payment:buttons instance="${[
-                finalTotal: 200,
                 currencyCode: 'GBP',  //defaults to PaymentConfig value if not set
+                editCartUrl:g.createLink(controller:'test', action:'checkout'),
+                cart:[
+                        [id:1, name:'item 1',  currency:'GBP', listPrice:1.10],
+                        [id:2, name:'item 2',  currency:'GBP', listPrice:1.00],
+                        [id:1, name:'item 1',  currency:'GBP', listPrice:1.10],
+                        [id:1, name:'item 1',  currency:'GBP', listPrice:1.10],
+                        [id:3, name:'item 3',  currency:'GBP', listPrice:0.50],
+                        [id:4, name:'item 4',  currency:'GBP', listPrice:0.50],
+                ],
                 address:[
                         title:'Mr',
                         firstName:'fred',
                         lastName: 'Smith',
-                        line1: '1 Long lane',
-                        line2: 'Big street',
+                        line1: '1aaaqqa Long lane',
+                        line2: 'Bigaaa street',
                         city: 'London',
                         state:'x',
                         country: 'United Kingdom',
                         countryCode: 'GB',  //should default to set value in PaymentConfig if not set
-                        username: 'fred',
-                        telephone:'12345'
-                ]   
-            ]}" 
+                        postcode:'se11at',
+                        telephone:'12345',
+                        emailAddress:'fred@example.fred.smith.a11.a10.com',
+                        username: 'fred@example.fred.smith.a11.a10.com',
+                        remoteCall:true,
+                ]
+        ]
+}" 
             />
 ```
+
+
+### 2. Full checkout feature
+
+>controller/TestController
+
+```groovy
+/**
+     * Test checkout
+     * Action index: has no variables set
+     * index.gsp hard codes parameters set to
+     * payment:checkout
+     */
+    def index() {}
+```
+
+>/test/index.gsp <payment:checkout
+
+Instance is populated in gsp in this case but could be like first 
+example where instance comes from controller. 
+the instance model is quite flexible you can provide everything or as little as possible
+
+ 
+```gsp 
+<!doctype html>
+<html>
+<head>
+    <meta name="layout" content="main"/>
+    <title>Welcome to Grails</title>
+</head>
+<body>
+<h4><g:render template="menu"/></h4>
+<payment:checkout instance="[
+        editCartUrl:g.createLink(controller:'test', action:'checkout'),
+        cart:[
+                [id:1, name:'item 1',  currency:'GBP', listPrice:1.10],
+                [id:2, name:'item 2',  currency:'GBP', listPrice:1.00],
+                [id:1, name:'item 1',  currency:'GBP', listPrice:1.10],
+                [id:1, name:'item 1',  currency:'GBP', listPrice:1.10],
+                [id:3, name:'item 3',  currency:'GBP', listPrice:0.50],
+                [id:4, name:'item 4',  currency:'GBP', listPrice:0.50],
+        ],
+       
+]"
+/>
+</body>
+</html>
+
+```
+
+For buttons you could probably get away as per example with just the user details and a finalTotal 
+so if you are just capturing a charge maybe a donation without cart items you could follow this example:
+
+
+```gsp
+<payment:buttons instance="${[
+        // this buttons instance has no cart items just a total
+        finalTotal: 1.00,  //override calculation from cart items below with your own final figure
+        currencyCode: 'GBP',  //defaults to PaymentConfig value if not set
+        editCartUrl:g.createLink(controller:'test', action:'checkout'),
+        address:[
+                title:'Mr',
+                firstName:'fred from gsp',
+                lastName: 'Smith in GSP',
+                line1: '1 GSP Page',
+                line2: 'set by gsp',
+                city: 'GrailsServerPage',
+                state:'GSP State',
+                country: 'United Kingdom',
+                countryCode: 'GB',  //should default to set value in PaymentConfig if not set
+                postcode:'se11at',
+                username: 'fredisinit@headhight.com',
+                remoteCall:true,
+                telephone:'12345',
+                emailAddress:'fredisinit@headhight.com',
+
+        ]
+]}"
+/>
+```
+
+
+#### Address  binding some variables explained:
+
+If no `username` is provided it will set it or use `emailAddress` as `username`
+The remoteCall is a new variable introduced and if you wish to override username taken errors
+set this to true so in case of buttons it will seamlessly work with existing users who placed orders etc
+
+The plugin will try to logically work out if a given set of details is a true match to existing data.
+If user is an existing user and the address details of line1 and line2 are identical then it will load up the existing user
+If it's an existing user but the address details a different then in typical checkout mode it would complain username is taken
+with `buttons` mode you can enable `remoteCall:true` the system will know to generate an alternative unused username to allow 
+a new sign up to complete sale. So perhaps in the case of buttons you want to enable this feature.  
+
+``` groovy
+ address:[
+    ..
+    //By default false
+    remoteCall:true  
+    //by default false
+    saveInfo:true 
+    
+    emailAddress='required@domain.com'  
+    username=''
+    ]
+```
+
+
+
 
 The `CartBean` has a load more inputs most of it set by system.
 The above example is the basic parameters and format required to be posted 
