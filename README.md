@@ -86,9 +86,7 @@ Start up your test site, there will now be an additional 2 controllers available
 
 Full walk through video 
 --
->> [You-Tube Video showing plugin in use](https://www.youtube.com/watch?v=U4iCEBeRiYs)
->
->> [You-Tube Video Part 2 easier usage of plugin explained](https://www.youtube.com/watch?v=llHpo8H90M4)
+>> [You-Tube Video showing plugin in use](https://www.youtube.com/watch?v=TJUeMjrMW3U)
 
 
 How to use plugin locally

@@ -62,8 +62,8 @@ class PaymentService {
             params.squareSandboxApplicationSecret = grailsApplication?.config?.payment?.square?.sandbox?.applicationSecret
             params.squareApplicationId = grailsApplication?.config?.payment?.square?.applicationId
             params.squareAccessToken = grailsApplication?.config?.payment?.square?.accessToken
-            params.squareSandboxLocation = grailsApplication?.config?.payment?.square?.squareSandboxLocation
-            params.squareLocation = grailsApplication?.config?.payment?.square?.squareLocation
+            params.squareSandboxLocation = grailsApplication?.config?.payment?.square?.sandbox?.location
+            params.squareLocation = grailsApplication?.config?.payment?.square?.location
 
             params.squareApplicationSecret = grailsApplication?.config?.payment?.square?.applicationSecret
             params.squareEnabled = grailsApplication?.config?.payment?.square?.enabled

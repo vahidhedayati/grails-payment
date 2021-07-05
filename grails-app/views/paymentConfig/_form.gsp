@@ -170,7 +170,13 @@
     <g:field type="text" class="form-control" name="squareSandboxApplicationId" value="${paymentConfig?.squareSandboxApplicationId}"
              maxLength="255" placeholder="255 chars max"/>
 </div>
-
+<div class="form-group col-md-6 ${hasErrors(bean: paymentConfig, field: 'squareSandboxLocation', 'error')} ">
+    <label for="squareSandboxLocation">
+        <g:message code="squareSandboxLocation.label" />
+    </label>
+    <g:field type="text" class="form-control" name="squareSandboxLocation" value="${paymentConfig?.squareSandboxLocation}"
+             maxLength="255" placeholder="255 chars max"/>
+</div>
 <div class="form-group col-md-6 ${hasErrors(bean: paymentConfig, field: 'squareSandboxAccessToken', 'error')} ">
     <label for="squareSandboxAccessToken">
         <g:message code="squareSandboxAccessToken.label" default="squareSandboxAccessToken.label"/>
@@ -192,6 +198,13 @@
         <g:message code="squareApplicationId.label" default="squareApplicationId.label"/>
     </label>
     <g:field type="text" class="form-control" name="squareApplicationId" value="${paymentConfig?.squareApplicationId}"
+             maxLength="255" placeholder="255 chars max"/>
+</div>
+<div class="form-group col-md-6 ${hasErrors(bean: paymentConfig, field: 'squareLocation', 'error')} ">
+    <label for="squareLocation">
+        <g:message code="squareLocation.label" />
+    </label>
+    <g:field type="text" class="form-control" name="squareLocation" value="${paymentConfig?.squareLocation}"
              maxLength="255" placeholder="255 chars max"/>
 </div>
 <div class="form-group col-md-6 ${hasErrors(bean: paymentConfig, field: 'squareAccessToken', 'error')} ">
