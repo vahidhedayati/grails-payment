@@ -95,7 +95,7 @@ class TestController {
                         telephone:'12345',
                         emailAddress:'fred@example.fred.smith.a11.a10.com',
                         username: 'fred@example.fred.smith.a11.a10.com',
-                        remoteCall:true,
+                        overrideErrorHalts:true,
                 ]
         ]
 
@@ -208,7 +208,7 @@ class TestController {
                 countryCode: 'GB',  //should default to set value in PaymentConfig if not set
                 postcode:'se11at',
                 username: 'fredisinit@headhight.com',
-                remoteCall:true,
+                overrideErrorHalts:true,
                 telephone:'12345',
                 emailAddress:'fredisinit@headhight.com',
 

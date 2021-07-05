@@ -4,6 +4,10 @@ import com.paypal.api.payments.Sale
 
 class PaypalSale {
 
+    String name
+    String sku
+    String description
+
     String paymentMode
     String payPalId
     String state
@@ -49,6 +53,9 @@ class PaypalSale {
 
 
     static constraints = {
+        description nullable:true
+        name nullable:true
+        sku nullable:true
         payPalId nullable:true
         paymentMode nullable:true
         state nullable:true
@@ -65,7 +72,21 @@ class PaypalSale {
         subtotal nullable:true
     }
 
-    public PaypalSale(Sale sale) {
+    PaypalSale(String saleId, String state,  com.paypal.orders.Item sale) {
+        this.payPalId=saleId
+        this.name=sale.name()
+        this.sku=sale.sku()
+        this.state = state
+        this.description = sale.description()
+        this.currency = sale.unitAmount().currencyCode()
+        this.total = sale.unitAmount().value()
+        if (sale.tax()) {
+            this.tax = sale.tax()?.value()
+        }
+        this.parentPayment=saleId
+    }
+
+    PaypalSale(Sale sale) {
         this.payPalId = sale.id
         this.currency = sale.amount.currency
         this.total = sale.amount.total

@@ -16,7 +16,7 @@ abstract class BasePayment implements Serializable {
 
     BigDecimal paid = 0.0   // how much got paid of order should match gross
     BigDecimal gross = 0.0  // final total
-
+    BigDecimal subTotal = 0.0  // final total
     boolean completed=false
     def transactionIdPrefix = "TRANS"
 

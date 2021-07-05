@@ -9,7 +9,7 @@ buildscript {
     }
 }
 
-version "1.0.1"
+version "1.0.2"
 group "io.github.vahidhedayati"
 
 apply plugin:"eclipse"
@@ -72,6 +72,10 @@ dependencies {
     compile "org.apache.httpcomponents:httpmime:$httpclientVersion"
     //generates timebased uuids used as idempotencyKey
     compile 'com.fasterxml.uuid:java-uuid-generator:4.0'
+
+    compile group: 'com.paypal.sdk', name: 'checkout-sdk', version: '1.0.2'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
+
 
     runtime "com.bertramlabs.plugins:asset-pipeline-grails:3.0.10"
 

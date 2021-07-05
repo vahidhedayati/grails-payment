@@ -1,11 +1,21 @@
 package org.grails.plugin.payment.paypal
 
 import com.paypal.api.payments.*
+import com.paypal.http.HttpResponse
+import com.paypal.http.exceptions.HttpException
+import com.paypal.orders.AddressPortable
+import com.paypal.orders.LinkDescription
+import com.paypal.orders.MerchantReceivableBreakdown
+import com.paypal.orders.OrdersCaptureRequest
+import com.paypal.orders.OrdersGetRequest
+import com.paypal.orders.PaymentCollection
+import com.paypal.orders.PurchaseUnit
 import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
 import org.grails.plugin.payment.PaymentItem
 import org.grails.plugin.payment.beans.CheckoutBean
 import org.grails.plugin.payment.listeners.PaymentConfigListener
+import org.grails.web.json.JSONObject
 
 @Transactional(readOnly = true)
 class PaypalController {
@@ -124,48 +134,122 @@ class PaypalController {
         render view: 'cancel'
     }
 
+    def executeJSON() {
+        def jsonParams = request.JSON
+        def cfg = paypalService.configuration
+        String orderId = jsonParams?.id
+        // String finalPaidTotal = jsonParams?.purchase_units?.amount?.value
+        // String currencyCode = jsonParams?.purchase_units?.amount?.currency_code
+        // List jsonParamItems =  jsonParams?.purchase_units?.items
+        // String paymentId = jsonParams?.purchase_units?.payments[0]?.captures[0]?.id
+        // String payerId = jsonParams?.payer?.payer_id
+        // String status = jsonParams?.status
+
+
+        int status=200
+        String text='complete'
+        com.paypal.orders.Order order
+        try {
+            OrdersGetRequest ordersGetRequest = new OrdersGetRequest(orderId)
+            HttpResponse<Order> orderResponse = cfg.client.execute(ordersGetRequest)
+            order = orderResponse.result()
+
+            PaypalPayment payment = paymentService.updatePaypalFromCheckout((String)session?.currencyCode, (BigDecimal)session?.finalTotal,
+                    order.payer,
+                    order.purchaseUnits().get(0))
+            if (payment) {
+                session.paymentId = payment?.id
+                session.user = payment.user
+                if (!payment.completed) {
+                    status = 404
+                    text='failed'
+                    //flash.message = "Payment amount of ${payment.gross} does not match expected  ${session.finalTotal} "
+                }
+            } else {
+                status = 404
+                text='failed'
+            }
+        }
+        catch (IOException ioe) {
+            status = 404
+            text='failed'
+            if (ioe instanceof HttpException) {
+                HttpException he = (HttpException) ioe;
+                log.error he.getMessage()
+                // he.headers().forEach { x -> System.out.println(x + " :" + he.headers().header(x)) }
+            } else {
+                log.error ioe.getMessage()
+            }
+            flash.message = "execute exception: ${ioe.getMessage()}."
+            //chain controller: 'payment', action: "checkout"
+            //return
+        }
+
+        render text: text, status:status
+        return
+    }
+
     def execute(){
        // def apiContext = paypalService.APIContext
         def cfg = paypalService.configuration
         def accessToken = paypalService.getAccessToken(cfg.clientId,cfg.clientSecret,cfg.sdkConfig)
         def apiContext = paypalService.getAPIContext(accessToken,cfg.sdkConfig)
         PaypalPayment dbPayment = PaypalPayment?.findByPaypalTransactionId(params.paymentId as String)
-        params.realPaymentId = dbPayment?.id
+        //params.realPaymentId = dbPayment?.id
+        session.paymentId = dbPayment?.id
         try {
             def paypalPayment = paypalService.createPaymentExecution(['paymentId': params.paymentId, 'payerId': params?.PayerID], apiContext)
             if (paypalPayment) {
                 dbPayment = paymentService.updatePaypalStatusAndDetails(params.paymentId as String,  paypalPayment)
                 session.cart = null
+                session.user = dbPayment.user
                 session.cartCounter = null
                 chain(action: 'thanks', params: params)
                 return
             }
         } catch (Throwable t) {
-            //println "-- e = ${t.stackTrace}"
-            log.error t.stackTrace
+            log.error t.getMessage()
+            flash.message = "execute exception: ${t.getMessage()}."
+            chain controller: 'payment', action: "checkout"
+            return
         }
         render view: 'cancel', model:[payment:dbPayment]
         return
     }
 
+
     def cancel() {
         PaypalPayment payment
-        if (params.realPaymentId) {
-            payment = PaypalPayment.get(params.realPaymentId as Long)
-        }
-        if (!payment && session.paymentId) {
+        //if (params.realPaymentId) {
+          //  payment = PaypalPayment.get(params.realPaymentId as Long)
+        //}
+        if (session.paymentId) {
             payment = PaypalPayment.get(session?.paymentId as Long)
         }
-        render view: 'cancel', model:[payment:payment]
+        if (payment && payment.user == session.user) {
+            render view: 'cancel', model:[payment:payment]
+            return
+        }
+        render view: 'cancel', model: [payment:[:]]
         return
     }
 
     def thanks() {
         PaypalPayment payment
-        if (params.realPaymentId) {
-            payment = PaypalPayment.get(params.realPaymentId as Long)
+        //if (params.realPaymentId) {
+         //   payment = PaypalPayment.get(params.realPaymentId as Long)
+       // }
+        if (session.paymentId) {
+            payment = PaypalPayment.get(session?.paymentId as Long)
         }
-        render view: 'success', model: [payment:payment]
+        if (payment ) {
+            //&&
+        //} payment.user == session.user) {
+            render view: 'success', model: [payment:payment]
+            return
+        }
+        render view: 'cancel', model: [payment:[:]]
+        return
     }
 
 }

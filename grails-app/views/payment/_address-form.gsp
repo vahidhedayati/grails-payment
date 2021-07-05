@@ -96,9 +96,11 @@
                     <g:message code="country.label"/>
                 </label>
                 <g:select name="address.country" id="country" from="${org.grails.plugin.payment.enums.CountryCode.values().findAll().sort{it.name}}"  optionValue="name"
-                          value="${address?.country}"
+                          value="${address?.country}" onchange="updateCountryCode(this.value)"
                           class="form-control" noSelection="['':'']"
                           required="true" />
+
+                <g:hiddenField name="countryCode" value="${address.countryCode}"/>
             </span>
         </div>
         <div class="clearfix visible-xs"></div>
@@ -161,3 +163,8 @@
         </span>
     </div>
 </div>
+<script>
+    function updateCountryCode(val) {
+        document.getElementById("countryCode").value=val
+    }
+</script>

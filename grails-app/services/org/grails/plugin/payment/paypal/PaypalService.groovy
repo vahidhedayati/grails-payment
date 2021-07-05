@@ -5,6 +5,8 @@ import com.paypal.base.Constants
 import com.paypal.base.rest.APIContext
 import com.paypal.base.rest.OAuthTokenCredential
 import com.paypal.base.rest.PayPalRESTException
+import com.paypal.core.PayPalEnvironment
+import com.paypal.core.PayPalHttpClient
 import grails.converters.JSON
 import grails.core.GrailsApplication
 import grails.util.Holders
@@ -30,6 +32,7 @@ class PaypalService {
     }
     Map getConfiguration(){
         String hostName = PaymentConfigListener.getValue('hostName') ?:getConfig('hostName')
+
         Map<String,String> sdkConfig = [:]
         String addConfig='paypal'
         if (PaymentConfigListener.getValue('paypalMode')  == PaymentConfig.SANDBOX) {
@@ -45,7 +48,19 @@ class PaypalService {
         sdkConfig.put(Constants.CLIENT_SECRET,clientSecret)
         sdkConfig.put(Constants.ENDPOINT,endpoint)
         sdkConfig.put(Constants.SANDBOX_EMAIL_ADDRESS,sandBoxEmail )
-        return [sdkConfig:sdkConfig,clientId:clientId,clientSecret:clientSecret,endpoint:endpoint,hostName:hostName]
+        // Creating a sandbox environment
+        PayPalEnvironment environment
+        if (PaymentConfigListener.getValue('paypalMode')  == PaymentConfig.SANDBOX) {
+            environment = new PayPalEnvironment.Sandbox(clientId, clientSecret)
+        } else {
+            environment = new PayPalEnvironment.Live(clientId, clientSecret);
+        }
+
+        // Creating a client for the environment
+        PayPalHttpClient client = new PayPalHttpClient(environment)
+
+
+        return [client:client, sdkConfig:sdkConfig,clientId:clientId,clientSecret:clientSecret,endpoint:endpoint,hostName:hostName]
     }
     
     /**
@@ -261,6 +276,28 @@ class PaypalService {
         return Payment.get(apiContext, props.paymentId).execute(
             apiContext, new PaymentExecution(payerId: props.payerId))
     }
+
+    /**
+     *
+     * getSale([saleId:xxx], apiContext)
+     * @param props
+     * @param apiContext
+     * @return
+     */
+    Sale getSale(Map<String, String> props, APIContext apiContext) {
+        return Sale.get(apiContext, props.saleId)
+    }
+
+    /**
+     * getOrder([orderId:xxx], apiContext)
+     * @param props
+     * @param apiContext
+     * @return
+     */
+    Order getOrder(Map<String, String> props, APIContext apiContext) {
+        return Order.get(apiContext, props.orderId)
+    }
+
 
     /**
      * Create redirect urls

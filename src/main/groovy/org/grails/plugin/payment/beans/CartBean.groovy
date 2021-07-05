@@ -23,12 +23,24 @@ class CartBean implements Validateable  {
 
     PaymentAddress selectedAddress
 
+    // If set to true it will use alternative _paypal.gsp template
+    // this will use paypal js file to complete transaction
+    boolean paypalJSMethod=false
+
     boolean hasAddress
 
     String editCartUrl = g.createLink(controller:'payment', action:'checkout')
 
+    // [id:1, name:'item 1', description: 'something',  currency:'GBP', listPrice:1.10,
+    // sku:'abc123',  category:'Some category', taxPrice: 0.25 ],
+    //sku, category, taxPrice used by paypal gsp popup window js revision all optional
     List cart=[]
+
+    // cartCounter.1=15
+    // cartCounter.2=2
+    // where key is id of cart id and value is amount in cart
     Map cartCounter=[:]
+
     String currencyCode
 
     BigDecimal shipping
@@ -46,7 +58,32 @@ class CartBean implements Validateable  {
     String squareToken
     String squareLocation
 
+
+
+
+    //Paypal JS variables
+    String shippingMethod
+    String referenceId
+    String description
+    String customId
+    String softDescriptor
+    boolean includeBreakDown=false
+    boolean includeItems=false
+    BigDecimal handling
+    BigDecimal taxTotal
+    BigDecimal shippingDiscount
+    boolean includeAddress=false
+
     static constraints = {
+        shippingMethod(nullable:true)
+        referenceId(nullable:true)
+        description(nullable:true)
+        customId(nullable:true)
+        softDescriptor(nullable:true)
+        handling(nullable:true)
+        taxTotal(nullable:true)
+        shippingDiscount(nullable:true)
+
         squareApplicationId(nullable:true)
         squareLocationId(nullable:true)
         squareToken(nullable:true)
@@ -82,11 +119,11 @@ class CartBean implements Validateable  {
     }
 
     def bindBean(List cart, Map cartCounter, String key,  PaymentUser authenticatedUser=null) {
-        this.bindKey(key)
+        bindKey(key)
         this.cart = cart
         this.cartCounter=cartCounter
-        this.countryCode = this.countryCode? this.countryCode : PaymentConfigListener.countryCode
-
+        this.countryCode = this.countryCode? this.countryCode : PaymentConfigListener.countryCode?.toString()
+        this.currencyCode = this.currencyCode? this.currencyCode : PaymentConfigListener.currencyCode?.toString()
         if (authenticatedUser) {
             this.user = authenticatedUser
             this.hasAddress=authenticatedUser?.hasAddress
@@ -118,7 +155,6 @@ class CartBean implements Validateable  {
             addr.country=this.countryCode?.name
             this.address =addr
         }
-        return this
     }
 
     String getPurchaseDescription() {
@@ -190,5 +226,27 @@ class CartBean implements Validateable  {
             result = cartCount
         }
         return result
+    }
+
+    Locale getLocale() {
+        return  new Locale(countryCode.toString())
+    }
+
+    List getCartItems() {
+        List<Long> doneIds=[]
+        List finalResult=[]
+        cart?.sort { a, b -> a?.id <=> b?.id }.each { item ->
+            Integer qty = cart?.findAll{it?.id == item?.id}?.size() ?: 1
+            Long id = item?.id as Long
+            BigDecimal itemTotal = item?.listPrice * qty
+            if (id && !doneIds.contains(id as Long)) {
+
+                item.quantity=qty
+                item.total=itemTotal
+                doneIds.push(item.id as Long)
+                finalResult << item
+            }
+        }
+        return finalResult
     }
 }

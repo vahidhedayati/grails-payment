@@ -6,17 +6,24 @@
                 </div>
         </div>
     </div>
-<g:each var="sale" in="${payment?.sales}">
-    <div class="row">
-        <div class="col">
-            <span class="transSummaryItemName">Status: <b>${sale.state}</b></span>
+<g:if test="${payment?.sales}">
+    <g:each var="sale" in="${payment?.sales}">
+        <div class="row">
+            <g:if test="${sale?.name}">
+            <div class="col">
+                <span class="transSummaryItemName">Name: <b>${sale.name}</b></span>
+            </div>
+            </g:if>
+            <div class="col">
+                <span class="transSummaryItemName">Status: <b>${sale.state}</b></span>
+            </div>
+            <div class="col">
+                <span class="transSummaryItemName">Paid: <b>${sale.total}</b></span>
+            </div>
         </div>
-        <div class="col">
-            <span class="transSummaryItemName">Paid: <b>${sale.total}</b></span>
-        </div>
-    </div>
-    </div>
-</g:each>
+    </g:each>
+</g:if>
+</div>
 <div class="card">
     <div class="row">
         <div class="col">

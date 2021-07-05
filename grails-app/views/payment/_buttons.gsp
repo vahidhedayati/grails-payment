@@ -15,10 +15,14 @@
         document.getElementById("cancelSquare").addEventListener('click', (event) => {
             changeState()
         })
+        document.getElementById("cancelPaypal").addEventListener('click', (event) => {
+            changeState()
+        })
         function changeState() {
             document.getElementById("nonStripeSquare").style.removeProperty("display");
             document.getElementById("stripeCardFields").style.display = "none";
             document.getElementById("stripeButton").style.display = "none";
+            document.getElementById("paypalButton").style.display = "none";
             document.getElementById("squareCardFields").style.display = "none";
         }
     })
@@ -74,14 +78,22 @@
             </div>
         </div>
     </div>
-
 </g:if>
 
 <div class="row" id="nonStripeSquare">
     <g:if test="${paypalEnabled}">
         <div class="col">
-            <g:actionSubmitImage value="Paypal" controller="payment" action="paypalcheckout"  class="img-fluid"
-                                 src="${resource(dir: 'images', file: 'btn_xpressCheckout.png')}" />
+            <g:if test="${instance.paypalJSMethod}">
+                <div class="col"  onclick="enablePaypal()">
+                    <asset:image src="btn_xpressCheckout.png"  class="img-fluid"/>
+                </div>
+            </g:if>
+            <g:else>
+                <g:actionSubmitImage value="Paypal" controller="payment" action="paypalcheckout"  class="img-fluid"
+                                     src="${resource(dir: 'images', file: 'btn_xpressCheckout.png')}" />
+            </g:else>
+
+
         </div>
     </g:if>
 
@@ -111,4 +123,6 @@
 <g:if test="${squareEnabled}">
     <g:render template="/payment/square" model="[instance:instance]"/>
 </g:if>
-
+<g:if test="${paypalEnabled && instance.paypalJSMethod}">
+    <g:render template="/payment/paypal" model="[instance:instance]"/>
+</g:if>

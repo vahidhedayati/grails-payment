@@ -49,7 +49,7 @@ class AddressBean implements Validateable  {
     String emailAddress
 
 
-    boolean remoteCall
+    boolean overrideErrorHalts
 
     static constraints = {
         id(nullable:true)
@@ -90,7 +90,7 @@ class AddressBean implements Validateable  {
 
 
     boolean getIsNewSignup() {
-        return (saveInfo && username && password && confirmPassword|| remoteCall && username)
+        return (saveInfo && username && password && confirmPassword|| overrideErrorHalts && username)
     }
 
     static def firstPassword={val,obj,errors->

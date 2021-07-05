@@ -1,11 +1,16 @@
 package org.grails.plugin.payment
 
 import com.paypal.api.payments.Transaction
+import com.paypal.orders.AddressPortable
+import com.paypal.orders.LinkDescription
+import com.paypal.orders.MerchantReceivableBreakdown
+import com.paypal.orders.PaymentCollection
 import com.squareup.square.models.CreatePaymentResponse
 import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
 import grails.validation.ValidationException
 import org.grails.plugin.payment.beans.CartBean
+import org.grails.plugin.payment.enums.CountryCode
 import org.grails.plugin.payment.enums.PaymentStatus
 import org.grails.plugin.payment.listeners.PaymentConfigListener
 import org.grails.plugin.payment.paypal.BuyerInformation
@@ -614,6 +619,104 @@ class PaymentService {
         }
     }
 
+    PaypalPayment updatePaypalFromCheckout(String currencyCode, BigDecimal finalTotal,
+            com.paypal.orders.Payer payer,
+                                           com.paypal.orders.PurchaseUnit purchaseUnit) {
+
+        com.paypal.orders.Payee payee = purchaseUnit.payee()
+        List<com.paypal.orders.Item> items = purchaseUnit.items()
+        AddressPortable address = purchaseUnit.shippingDetail().addressPortable()
+        PaymentCollection payments =  purchaseUnit.payments()
+        com.paypal.orders.Capture capture = payments.captures().get(0)
+        List<LinkDescription> orderLinks = capture.links()
+        com.paypal.orders.Money money = capture.amount()
+        MerchantReceivableBreakdown breakdown = capture.sellerReceivableBreakdown()
+
+        PaypalPayment payment =  new PaypalPayment()
+        payment.paypalTransactionId = capture.id()
+
+        payment.paypalFee = breakdown.paypalFee().value()
+        payment.currencyCode = breakdown.paypalFee().currencyCode()
+
+
+        Map input = [:]
+
+        input.username = payer.email()
+        input.emailAddress = payer.email()
+        input.firstName = payer?.name()
+        input.lastName = payer?.name()
+        AddressPortable userAddress = payer.addressPortable()
+        input.address=[:]
+        input.address.countryCode = userAddress.countryCode()
+        input.address.country = CountryCode.valueOf(userAddress?.countryCode()).name
+        input.address.city = userAddress?.adminArea2()
+        input.address.state = userAddress?.adminArea1()
+        input.address.postcode = userAddress?.postalCode()
+        input.address.line1 = userAddress?.addressLine1()
+        input.address.line2 = userAddress?.addressLine2()
+        input.address.emailAddress =payer?.email()
+        input.address.firstName = payer?.name()
+        input.address.lastName = payer?.name()
+        def addedUser = addUser(input)
+        if (addedUser.user) {
+            payment.user = addedUser.user
+        }
+
+        BuyerInformation buyerInfo = payment?.buyerInformation
+        if (!buyerInfo) {
+            buyerInfo = new BuyerInformation()
+        }
+        buyerInfo.email = payer?.email()
+        buyerInfo.countryCode = address?.countryCode()
+        buyerInfo.line1 = address?.addressLine1()
+        buyerInfo.line2 = address?.addressLine2()
+        buyerInfo.line3 = address?.addressLine3()
+        buyerInfo.state = address?.adminArea1()
+        buyerInfo.zip = address?.postalCode()
+        buyerInfo.save(flush:true)
+        payment.paypalUserStatus = capture.status()
+        //payment.paymentMethod = payer.
+
+        items?.each { com.paypal.orders.Item item->
+               new PaypalSale(capture.id(),  capture.status(), item).save(flush:true)
+        }
+        payment.gross = new BigDecimal(money.value())
+        payment.currency= Currency.getInstance(money.currencyCode())
+        if (currencyCode == money.currencyCode() && finalTotal == new BigDecimal(money.value())) {
+            payment.completed = true
+        }
+        //payment.currency = Currency.getInstance(breakdown.grossAmount().currencyCode())
+        payment.subTotal = new BigDecimal(breakdown.grossAmount().value())
+       return  payment.save(flush:true)
+
+        //println "1-- ${capture.id()}"
+        //println "2-- ${money.value()} vs ${money.currencyCode()}"
+        //println "3-- ${capture.status()}"
+        //println "4-- ${breakdown.grossAmount().value()} vs ${breakdown.grossAmount().currencyCode()}"
+        //println "5-- ${capture.captureStatusDetails()}"
+        //println "6-- ${capture.createTime()}"
+        //orderLinks?.each { link->
+           // println(link.rel() + " => " + link.method() + ":" + link.href())
+        //}
+    }
+
+    @Transactional
+    def generatePaypalDetails(com.paypal.api.payments.Payment incomePayment) {
+        PaypalPayment payment =  new PaypalPayment()
+        payment.paypalTransactionId = incomePayment.id as String
+        payment.paymentMethod = incomePayment?.payer?.paymentMethod
+
+        BuyerInformation buyerInfo = payment?.buyerInformation
+        if (!buyerInfo) {
+            buyerInfo = new BuyerInformation()
+        }
+        buyerInfo.email = incomePayment?.payer?.payerInfo?.email
+        buyerInfo.countryCode = incomePayment?.payer?.payerInfo?.countryCode
+        buyerInfo.save(flush:true)
+        payment.populateFromPaypal(incomePayment)
+        populateDbFromPaypal(incomePayment)
+        payment.save(flush:true)
+    }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     def updatePaypalDetails(com.paypal.api.payments.Payment incomePayment, Long paymentId) {

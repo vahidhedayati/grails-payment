@@ -10,6 +10,7 @@
             <span class="transSummaryItemName">Paid:</span>
         </div>
     </div>
+<g:if test="${payment?.sales}">
     <g:each var="sale" in="${payment.sales}">
         <div>
             <div class="transSummaryItem  col-sm-6">
@@ -20,6 +21,7 @@
             </div>
         </div>
     </g:each>
+</g:if>
 </div>
 
 <div class="col-sm-8 card-warning">

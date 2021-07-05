@@ -17,7 +17,6 @@
                 <span class="transSummaryItemName">Price:</span>
             </div>
         </div>
-
         <g:each var="paymentItem" in="${payment.paymentItems}">
             <div class="row">
                 <div class="col">

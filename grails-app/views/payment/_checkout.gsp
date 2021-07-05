@@ -119,10 +119,9 @@
         </div>
     </div>
 </div>
-<div class="row">&nbsp;</div>
+<div class="row">&nbsp;
+</div>
 <script type="text/javascript">
-
-
     document.addEventListener("DOMContentLoaded", function() {
         doUserBlock(document.getElementById("saveInfo"));
         document.getElementById("line1").required=false;

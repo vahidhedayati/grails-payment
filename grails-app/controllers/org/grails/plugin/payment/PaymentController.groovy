@@ -10,17 +10,21 @@ import com.stripe.model.Customer
 import org.grails.plugin.payment.beans.CartBean
 import org.grails.plugin.payment.beans.StripeBean
 import org.grails.plugin.payment.listeners.PaymentConfigListener
+import org.grails.plugin.payment.paypal.PaypalService
 import org.grails.plugin.payment.square.SquarePayment
+import org.grails.plugin.payment.square.SquareService
 import org.grails.plugin.payment.stripe.StripePayment
+import org.grails.plugin.payment.stripe.StripeService
 import org.grails.plugin.payment.util.PaymentHelper
 
 class PaymentController {
 
     static defaultAction = "index"
-    def paymentService
-    def stripeService
-    def squareService
+    PaymentService paymentService
+    StripeService stripeService
+    SquareService squareService
     def userService
+    PaypalService paypalService
 
     private String getSECRET_KEY() {
         return stripeService.configuration.stripeSecretKey
@@ -64,17 +68,16 @@ class PaymentController {
     /**
      * Thanks is called by stripe and square final actions
      * @param provider
-     * @param realPaymentId
      * @return
      */
-    def thanks(String provider, Long realPaymentId ) {
+    def thanks(String provider) {
         def payment
         String view = provider+'FailedPayment'
-        if (params.realPaymentId) {
+        if (session.paymentId) {
             if (provider=='stripe') {
-                payment = StripePayment.get(realPaymentId)
+                payment = StripePayment.get(session.paymentId)
             } else if (provider == 'square') {
-                payment = SquarePayment.get(realPaymentId)
+                payment = SquarePayment.get(session.paymentId)
             }
             if (payment && payment?.user) {
                 //TODO - PLUGIN does not have a userService this is for your app !!!!!
@@ -147,6 +150,9 @@ class PaymentController {
         Map sqCfg = squareService.configuration
         bean.squareApplicationId = sqCfg.squareApplicationId
         bean.squareLocationId = (String) sqCfg?.location
+
+        //Map ppCfg = paypalService.configuration
+
         return bean
     }
 
@@ -155,7 +161,7 @@ class PaymentController {
         updatePayConfig(bean)
 
         if (session?.user && !bean.user) {
-            bean.user = userFound
+            bean.user = session?.user
         }
         if (session?.cart && !bean?.cart) {
             bean.cart = session?.cart
@@ -179,7 +185,7 @@ class PaymentController {
         ifSquareEnabled
         updateBean(bean)
         try {
-            bean = paymentService.setCartUserAddress((CartBean) bean)
+            paymentService.setCartUserAddress((CartBean) bean)
             Map moneyMap = [:]
             moneyMap.amount=((bean?.finalTotal?:0) * 100).longValue()
             moneyMap.currency=bean?.currencyCode?: PaymentConfigListener.currencyCode?.toString()?:Currency.getInstance(Locale.UK).currencyCode
@@ -210,7 +216,8 @@ class PaymentController {
                 SquarePayment squarePayment = paymentService.finaliseSquareCheckout(bean,response)
                 if (squarePayment && squarePayment?.id) {
                     flash.message = "Your order succeeded"
-                    Map returnParams = [provider:'square', realPaymentId: squarePayment?.id]
+                    session.paymentId = squarePayment?.id
+                    Map returnParams = [provider:'square']//, realPaymentId: squarePayment?.id]
                     session.currentUser = bean.user
                     session.cart = null
                     session.cartCounter = null
@@ -256,7 +263,7 @@ class PaymentController {
             chargeParams.put("amount", (bean?.finalTotal * 100).intValue()); // Amount in cents
            // chargeParams.put("currency", bean.currencyCode as String)
             chargeParams.currency=bean?.currencyCode?: PaymentConfigListener.currencyCode?.toString()?:Currency.getInstance(Locale.UK).currencyCode
-            bean = paymentService.setCartUserAddress(bean)
+            paymentService.setCartUserAddress(bean)
 
             session.currentUser = bean.user
             Customer customer = stripeService.createCustomer(bean.loadCustomerValues(stripeService.createAddress(bean.loadCustomerAddress())))
@@ -292,7 +299,8 @@ class PaymentController {
         StripePayment stripePayment = paymentService.finaliseStripeCheckout(bean)
         if (stripePayment && stripePayment?.id) {
             flash.message = "Your order succeeded"
-            Map returnParams = [provider:'stripe', realPaymentId: stripePayment?.id]
+            session.paymentId = stripePayment?.id
+            Map returnParams = [provider:'stripe']//, realPaymentId: stripePayment?.id]
             session.cart = null
             session.cartCounter = null
             chain(action: 'thanks', params: returnParams)

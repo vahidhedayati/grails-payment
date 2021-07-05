@@ -79,8 +79,8 @@
     document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("stripeSubmit").addEventListener("click", function (e) {
             e.preventDefault();
-            e.stopImmediatePropagation();
-            e.stopPropagation();
+            //e.stopImmediatePropagation();
+            //e.stopPropagation();
             //triggerBrowserValidation();
 
             var plainInputsValid = true;
@@ -128,7 +128,7 @@
                 }
             });
             } catch (e) {
-               console.log('stripe.createToken'+JSON.stringify(e))
+               console.log('stripe.createToken error'+JSON.stringify(e))
              }
         });
     })

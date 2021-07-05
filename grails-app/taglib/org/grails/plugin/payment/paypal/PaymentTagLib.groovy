@@ -58,12 +58,18 @@ class PaymentTagLib {
      *
      */
     def internalButtons = { attrs->
+        CartBean bean = (CartBean) attrs.instance
+        //updateBean(bean)
+        session.finalTotal = bean.finalTotal
+        session.currencyCode = bean.currencyCode
         out << g.render(contextPath: pluginContextPath, template : '/payment/buttons', model:attrs)
     }
 
     def buttons = { attrs->
         CartBean bean = new CartBean(attrs.instance)
         updateBean(bean)
+        session.finalTotal = bean.finalTotal
+        session.currencyCode = bean.currencyCode
         out << g.render(contextPath: pluginContextPath, template:"/templates/fakeForm" , model:[instance:bean, templateFile : '/payment/buttons'])
     }
 
@@ -76,12 +82,18 @@ class PaymentTagLib {
      */
     def checkout = {Map attrs ->
         CartBean bean = new CartBean(attrs?.instance)
-        bean.bindBean(attrs?.instance?.cart as List,attrs?.instance?.cartCounter as Map,PUBLIC_KEY, (PaymentUser)attrs?.instance?.user)
+        //PaymentUser user
+        //if (attrs?.instance?.user) {
+        //    user = PaymentUser.get(attrs?.instance?.user?.id as Long)
+        //}
+        bean.bindBean(attrs?.instance?.cart as List,attrs?.instance?.cartCounter as Map,PUBLIC_KEY,(PaymentUser) attrs?.instance?.user)
+
         updateBean(bean)
         if (!bean?.cart) {
             out << g.render(contextPath: pluginContextPath, template : '/payment/failed', model: [instance:bean])
         } else {
             session.finalTotal = bean.finalTotal
+            session.currencyCode = bean.currencyCode
             session.cart = bean.cart
             session.cartCounter = bean.cartCounter
             out << g.render(contextPath: pluginContextPath, template : '/payment/checkout', model: [instance:bean])
@@ -93,19 +105,19 @@ class PaymentTagLib {
 
     private CartBean updateBean(CartBean bean) {
 
-        if (session?.user && !bean.user) {
-            bean.user = userFound
-        }
+        //if (session?.user && !bean?.user) {
+        //    bean.user = session?.user
+       // }
         if (session?.cart && !bean?.cart) {
             bean.cart = session?.cart
         }
         if (session?.cartCounter && !bean?.cartCounter) {
             bean.cartCounter = session?.cartCounter
         }
-        if (!bean.finalTotal) {
+        if (!bean?.finalTotal) {
             bean.finalTotal = bean?.cart*.listPrice?.sum()?: session?.finalTotal
         }
-        if (!bean.subTotal && bean.finalTotal) {
+        if (!bean?.subTotal && bean?.finalTotal) {
             bean.subTotal = bean.finalTotal
         }
         bean.bindKey(PUBLIC_KEY)

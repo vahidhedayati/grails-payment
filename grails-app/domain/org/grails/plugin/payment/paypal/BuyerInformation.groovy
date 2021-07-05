@@ -12,7 +12,9 @@ class BuyerInformation implements Serializable {
 	String companyName
 	String receiverName // included when the customer provides a Gift Address
 	String email
+	String line1
 	String line2
+	String line3
 	String zip
 	String city
 	String state
@@ -35,7 +37,9 @@ class BuyerInformation implements Serializable {
 		companyName nullable: true, blank: true
 		receiverName nullable: true, blank: true
 		email nullable: true, blank: true
+		line1 nullable: true, blank: true
 		line2 nullable: true, blank: true
+		line3 nullable: true, blank: true
 		zip nullable: true, blank: true
 		city nullable: true, blank: true
 		state nullable: true, blank: true

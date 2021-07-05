@@ -7,6 +7,7 @@
         <input type="hidden" name="address.city" id="city" value="${instance?.address?.city}"/>
         <input type="hidden" name="address.state" id="state" value="${instance?.address?.state}"/>
         <input type="hidden" name="address.country" id="country" value="${instance?.address?.country}"/>
+        <input type="hidden" name="address.countryCode" id="countryCode" value="${instance?.address?.countryCode}"/>
         <input type="hidden" name="address.postcode" id="postcode" value="${instance?.address?.postcode}"/>
         <input type="hidden" name="address.emailAddress" id="emailAddress" value="${instance?.address?.emailAddress}"/>
         <input type="hidden" name="finalTotal" id="finalTotal" value="${instance?.finalTotal}"/>

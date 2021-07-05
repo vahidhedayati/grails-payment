@@ -29,7 +29,6 @@ class ItemTagLib {
                     itemInfo.qty=qty
                     itemInfo.itemTotal=itemTotal
                     cartCounter[item.id]=qty
-                    cartCounter[item.id]=qty
                     session.cartCounter = cartCounter
                     doneIds.push(item.id as Long)
                     out << body(itemInfo)
