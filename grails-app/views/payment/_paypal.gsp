@@ -23,6 +23,9 @@
     let state = (document.getElementById("state").value ? document.getElementById("state").value : '${instance?.address?.state}')
     let countryCode = (document.getElementById("countryCode").value ? document.getElementById("countryCode").value : '${instance?.address?.countryCode}')
     let zip = (document.getElementById("postcode").value?document.getElementById("postcode").value:'${instance?.address?.postcode}')
+    let emailAddress = (document.getElementById("emailAddress").value?document.getElementById("emailAddress").value:'${instance?.address?.emailAddress}')
+
+
 
     paypal.Buttons({
         style: {
@@ -141,6 +144,8 @@
         },
         onApprove: function(data, actions) {
             return actions.order.capture().then(function(details) {
+                details.emailAddress = emailAddress
+                details.username = emailAddress
                 updateDatabase(JSON.stringify(details))
             });
         },
@@ -152,6 +157,7 @@
     }).render('#paypal-button-container'); // Display payment options on your web page
 
     async function updateDatabase(jsonData) {
+
         let result = await makeRequest("POST", '${g.createLink(controller:'paypal', action:'executeJSON')}', jsonData);
         if (result === 'complete') {
             window.location.href = "/paypal/thanks" ;

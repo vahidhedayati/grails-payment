@@ -619,9 +619,9 @@ class PaymentService {
         }
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     PaypalPayment updatePaypalFromCheckout(String currencyCode, BigDecimal finalTotal,
-            com.paypal.orders.Payer payer,
-                                           com.paypal.orders.PurchaseUnit purchaseUnit) {
+            String emailAddress, com.paypal.orders.Payer payer, com.paypal.orders.PurchaseUnit purchaseUnit) {
 
         com.paypal.orders.Payee payee = purchaseUnit.payee()
         List<com.paypal.orders.Item> items = purchaseUnit.items()
@@ -641,22 +641,23 @@ class PaymentService {
 
         Map input = [:]
 
-        input.username = payer.email()
-        input.emailAddress = payer.email()
-        input.firstName = payer?.name()
-        input.lastName = payer?.name()
+        input.username = emailAddress ?: payer.email()
+        input.emailAddress =  emailAddress ?: payer.email()
+        input.firstName = payer?.name()?.givenName()
+        input.lastName = payer?.name()?.surname()
         AddressPortable userAddress = payer.addressPortable()
         input.address=[:]
-        input.address.countryCode = userAddress.countryCode()
-        input.address.country = CountryCode.valueOf(userAddress?.countryCode()).name
-        input.address.city = userAddress?.adminArea2()
-        input.address.state = userAddress?.adminArea1()
-        input.address.postcode = userAddress?.postalCode()
-        input.address.line1 = userAddress?.addressLine1()
-        input.address.line2 = userAddress?.addressLine2()
-        input.address.emailAddress =payer?.email()
-        input.address.firstName = payer?.name()
-        input.address.lastName = payer?.name()
+        input.address.countryCode = userAddress.countryCode() ?: address.countryCode()
+        input.address.country = CountryCode.valueOf((String)input.address.countryCode).name
+        input.address.city = userAddress?.adminArea2() ?: address.adminArea2()
+        input.address.state = userAddress?.adminArea1()?:address.adminArea1()
+        input.address.postcode = userAddress?.postalCode() ?:address.postalCode()
+        input.address.line1 = userAddress?.addressLine1() ?:address.addressLine1()
+        input.address.line2 = userAddress?.addressLine2() ?:address.addressLine2()
+        input.address.emailAddress =emailAddress ?: payer.email()
+        input.address.firstName =payer?.name()?.givenName()
+        input.address.lastName = payer?.name()?.surname()
+
         def addedUser = addUser(input)
         if (addedUser.user) {
             payment.user = addedUser.user
@@ -667,13 +668,20 @@ class PaymentService {
             buyerInfo = new BuyerInformation()
         }
         buyerInfo.email = payer?.email()
-        buyerInfo.countryCode = address?.countryCode()
-        buyerInfo.line1 = address?.addressLine1()
-        buyerInfo.line2 = address?.addressLine2()
-        buyerInfo.line3 = address?.addressLine3()
-        buyerInfo.state = address?.adminArea1()
-        buyerInfo.zip = address?.postalCode()
+        buyerInfo.countryCode = userAddress.countryCode() ?: address.countryCode()
+        buyerInfo.country = CountryCode.valueOf(buyerInfo.countryCode).name
+        buyerInfo.line1 = userAddress?.addressLine1() ?:address.addressLine1()
+        buyerInfo.line2 = userAddress?.addressLine2() ?:address.addressLine2()
+        //buyerInfo.line3 = address?.addressLine3()
+        buyerInfo.city  = userAddress?.adminArea2() ?: address.adminArea2()
+        buyerInfo.state = userAddress?.adminArea1()?:address.adminArea1()
+
+        buyerInfo.zip =  userAddress?.postalCode() ?:address.postalCode()
         buyerInfo.save(flush:true)
+        if (!payment?.buyerInformation) {
+            payment?.buyerInformation=buyerInfo
+        }
+
         payment.paypalUserStatus = capture.status()
         //payment.paymentMethod = payer.
 

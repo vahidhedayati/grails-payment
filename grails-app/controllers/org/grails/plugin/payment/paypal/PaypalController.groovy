@@ -145,7 +145,6 @@ class PaypalController {
         // String payerId = jsonParams?.payer?.payer_id
         // String status = jsonParams?.status
 
-
         int status=200
         String text='complete'
         com.paypal.orders.Order order
@@ -155,6 +154,7 @@ class PaypalController {
             order = orderResponse.result()
 
             PaypalPayment payment = paymentService.updatePaypalFromCheckout((String)session?.currencyCode, (BigDecimal)session?.finalTotal,
+                    (String) jsonParams?.emailAddress,
                     order.payer,
                     order.purchaseUnits().get(0))
             if (payment) {

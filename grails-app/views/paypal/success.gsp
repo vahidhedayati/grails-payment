@@ -16,7 +16,7 @@
 				<div class="transSummaryItem row">
 					<span class="transSummaryItemName col">Order ID: <b>${payment?.id}</b></span>
 					<span class="transSummaryItemName col">Transaction ID: <b>${payment?.transactionId}
-						<b><u>${payment?.paypalTransactionId}</u></b></span>
+						<br/><b><u>${payment?.paypalTransactionId}</u></b></span>
 					<span class="navbar-right text-right col">
 						<span class="transSummaryItemName">Order Date:</span>
 						<span class="transSummaryItemValue"><b><g:formatDate date="${payment.dateCreated}" format="${g.message(code:'dateTime.format')}"/></b></span>
