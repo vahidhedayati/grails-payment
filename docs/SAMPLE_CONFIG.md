@@ -37,7 +37,7 @@ payment {
         }
     }
     stripe {
-        ecretKey = 'YOUR_LIVE_SECRET_KEY'
+        secretKey = 'YOUR_LIVE_SECRET_KEY'
         publishableKey = 'YOUR_LIVE_PUBLISHABLE_KEY'
         enabled=true
         mode='sandbox'  // choose sandbox or live in web interface
